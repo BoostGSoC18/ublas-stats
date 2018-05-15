@@ -414,6 +414,50 @@ namespace boost { namespace numeric { namespace ublas {
         }
     };
 
+    template<class V>
+    struct vector_mean_iterative: 
+        public vector_scalar_unary_functor<V> {
+        typedef typename vector_scalar_unary_functor<V>::value_type value_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const vector_expression<E> &e) { 
+            result_type t = result_type (0);
+            typedef typename E::size_type vector_size_type;
+            vector_size_type size (e ().size ());
+            for (vector_size_type i = 0; i < size; ++ i)
+                t += (e () (i) - t) / (i + 1);
+            return t;
+        }
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) { 
+            result_type t = result_type (0);
+            D i (0);
+            while (++i <= size) {
+                t += (*it - t) / i;
+                ++ it;
+            }
+            return t;
+        }
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            result_type t = result_type (0);
+            typedef typename I::difference_type vector_difference_type;
+            vector_difference_type size (1);
+            while (it != it_end) {
+                t += (*it - t) / size;
+                ++ it;
+                ++ size;
+            }
+            return t;
+        }
+    };
+
     // Unary returning real scalar 
     template<class V>
     struct vector_scalar_real_unary_functor {
@@ -880,7 +924,7 @@ namespace boost { namespace numeric { namespace ublas {
             matrix_size_type size1 (e ().size1 ());
             matrix_size_type size2 (e ().size2 ());
             for (matrix_size_type i = 0; i < size1; ++ i) {
-                for (matrix_size_type j = 0; j < size1; ++ j) {
+                for (matrix_size_type j = 0; j < size2; ++ j) {
                     t += e () (i, j);
                 }
             }
@@ -910,6 +954,56 @@ namespace boost { namespace numeric { namespace ublas {
                 ++ size;
             }
             return t / size;
+        }
+    };
+
+    template<class M>
+    struct matrix_mean_iterative: 
+        public matrix_scalar_unary_functor<M> {
+        typedef typename matrix_scalar_unary_functor<M>::value_type value_type;
+        typedef typename matrix_scalar_unary_functor<M>::result_type result_type;
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const matrix_expression<E> &e) { 
+            result_type t = result_type (0);
+            typedef typename E::size_type matrix_size_type;
+            matrix_size_type size1 (e ().size1 ());
+            matrix_size_type size2 (e ().size2 ());
+            matrix_size_type num_elements (0);
+            for (matrix_size_type i = 0; i < size1; ++ i) {
+                for (matrix_size_type j = 0; j < size2; ++ j) {
+                    num_elements++;
+                    t += (e () (i, j) - t) / num_elements;
+                }
+            }
+            return t;
+        }
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) { 
+            result_type t = result_type (0);
+            D i (0);
+            while (++ i <= size) {
+                t += (*it - t) / i;
+                ++ it;
+            }
+            return t;
+        }
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            result_type t = result_type (0);
+            typedef typename I::difference_type matrix_difference_type;
+            matrix_difference_type size (1);
+            while (it != it_end) {
+                t += (*it - t) / size;
+                ++ it;
+                ++ size;
+            }
+            return t;
         }
     };
 

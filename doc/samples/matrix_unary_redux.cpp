@@ -26,7 +26,7 @@ int main () {
 
     // std::cout << sum (m) << std::endl;
     std::cout << mean (m) << std::endl;
-    // std::cout << mean_iterative (m) << std::endl;
+    std::cout << mean_iterative (m) << std::endl;
     // std::cout << median (m) << std::endl;
     // std::cout << mode (m) << std::endl;
     // std::cout << variance (m) << std::endl;

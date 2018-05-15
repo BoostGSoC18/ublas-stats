@@ -5610,7 +5610,15 @@ namespace boost { namespace numeric { namespace ublas {
     mean (const matrix_expression<E> &e) {
         typedef typename matrix_scalar_unary_traits<E, matrix_mean<E> >::expression_type expression_type;
         return expression_type (e ());
-    }    
+    }
+
+    template<class E>
+    BOOST_UBLAS_INLINE
+    typename matrix_scalar_unary_traits<E, matrix_mean_iterative<E> >::result_type
+    mean_iterative (const matrix_expression<E> &e) {
+        typedef typename matrix_scalar_unary_traits<E, matrix_mean_iterative<E> >::expression_type expression_type;
+        return expression_type (e ());
+    }
 
     template<class E>
     BOOST_UBLAS_INLINE
