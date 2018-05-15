@@ -371,6 +371,49 @@ namespace boost { namespace numeric { namespace ublas {
         }
     };
 
+    template<class V>
+    struct vector_mean: 
+        public vector_scalar_unary_functor<V> {
+        typedef typename vector_scalar_unary_functor<V>::value_type value_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const vector_expression<E> &e) { 
+            result_type t = result_type (0);
+            typedef typename E::size_type vector_size_type;
+            vector_size_type size (e ().size ());
+            for (vector_size_type i = 0; i < size; ++ i)
+                t += e () (i);
+            return t / size;
+        }
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) { 
+            result_type t = result_type (0);
+            while (-- size >= 0) {
+                t += *it;
+                ++ it;
+            }
+            return t / size; 
+        }
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            result_type t = result_type (0);
+            typedef typename I::difference_type vector_difference_type;
+            vector_difference_type size (0);
+            while (it != it_end) {
+                t += *it;
+                ++ it;
+                ++ size;
+            }
+            return t / size;
+        }
+    };
+
     // Unary returning real scalar 
     template<class V>
     struct vector_scalar_real_unary_functor {
@@ -815,6 +858,60 @@ namespace boost { namespace numeric { namespace ublas {
     };
 
     // Matrix functors
+
+    // Unary returning scalar
+    template<class M>
+    struct matrix_scalar_unary_functor {
+        typedef typename M::value_type value_type;
+        typedef typename M::value_type result_type;
+    };
+
+    template<class M>
+    struct matrix_mean: 
+        public matrix_scalar_unary_functor<M> {
+        typedef typename matrix_scalar_unary_functor<M>::value_type value_type;
+        typedef typename matrix_scalar_unary_functor<M>::result_type result_type;
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const matrix_expression<E> &e) { 
+            result_type t = result_type (0);
+            typedef typename E::size_type matrix_size_type;
+            matrix_size_type size1 (e ().size1 ());
+            matrix_size_type size2 (e ().size2 ());
+            for (matrix_size_type i = 0; i < size1; ++ i) {
+                for (matrix_size_type j = 0; j < size1; ++ j) {
+                    t += e () (i, j);
+                }
+            }
+            return t / (size1 * size2);
+        }
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) { 
+            result_type t = result_type (0);
+            while (-- size >= 0) {
+                t += *it;
+                ++ it;
+            }
+            return t / size; 
+        }
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            result_type t = result_type (0);
+            typedef typename I::difference_type matrix_difference_type;
+            matrix_difference_type size (0);
+            while (it != it_end) {
+                t += *it;
+                ++ it;
+                ++ size;
+            }
+            return t / size;
+        }
+    };
 
     // Binary returning vector
     template<class M1, class M2, class TV>

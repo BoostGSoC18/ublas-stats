@@ -1589,6 +1589,14 @@ namespace boost { namespace numeric { namespace ublas {
         return expression_type (e ());
     }
 
+    template<class E>
+    BOOST_UBLAS_INLINE
+    typename vector_scalar_unary_traits<E, vector_mean<E> >::result_type
+    mean (const vector_expression<E> &e) {
+        typedef typename vector_scalar_unary_traits<E, vector_mean<E> >::expression_type expression_type;
+        return expression_type (e ());
+    }
+
     // real: norm_1 v = sum (abs (v [i]))
     // complex: norm_1 v = sum (abs (real (v [i])) + abs (imag (v [i])))
     template<class E>

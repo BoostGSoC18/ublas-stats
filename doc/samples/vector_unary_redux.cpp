@@ -18,7 +18,16 @@ int main () {
     for (unsigned i = 0; i < v.size (); ++ i)
         v (i) = i;
 
+    // std::cout << maxk (v, 3) << std::endl;
+    // std::cout << mink (v, 3) << std::endl;
+
     std::cout << sum (v) << std::endl;
+    std::cout << mean (v) << std::endl;
+    // std::cout << mean_iterative (v) << std::endl;
+    // std::cout << median (v) << std::endl;
+    // std::cout << mode (v) << std::endl;
+    // std::cout << variance (v) << std::endl;
+    // std::cout << variance_iterative (v) << std::endl;
     std::cout << norm_1 (v) << std::endl;
     std::cout << norm_2 (v) << std::endl;
     std::cout << norm_inf (v) << std::endl;

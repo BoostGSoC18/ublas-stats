@@ -5606,6 +5606,14 @@ namespace boost { namespace numeric { namespace ublas {
 
     template<class E>
     BOOST_UBLAS_INLINE
+    typename matrix_scalar_unary_traits<E, matrix_mean<E> >::result_type
+    mean (const matrix_expression<E> &e) {
+        typedef typename matrix_scalar_unary_traits<E, matrix_mean<E> >::expression_type expression_type;
+        return expression_type (e ());
+    }    
+
+    template<class E>
+    BOOST_UBLAS_INLINE
     typename matrix_scalar_unary_traits<E, matrix_norm_1<E> >::result_type
     norm_1 (const matrix_expression<E> &e) {
         typedef typename matrix_scalar_unary_traits<E, matrix_norm_1<E> >::expression_type expression_type;
