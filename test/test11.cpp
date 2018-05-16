@@ -122,8 +122,8 @@ struct test_my_vector {
 
         t = ublas::mean (v1);
         std::cout << "mean (v1) = " << t << std::endl;
-        // t = ublas::mean_iterative (v1);
-        // std::cout << "mean_iterative (v1) = " << t << std::endl;
+        t = ublas::mean_iterative (v1);
+        std::cout << "mean_iterative (v1) = " << t << std::endl;
         // t = ublas::variance (v1);
         // std::cout << "variance (v1) = " << t << std::endl;
         // t = ublas::variance_iterative (v1);

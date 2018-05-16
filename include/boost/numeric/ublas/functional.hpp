@@ -458,6 +458,114 @@ namespace boost { namespace numeric { namespace ublas {
         }
     };
 
+    template<class V>
+    struct vector_variance: 
+        public vector_scalar_unary_functor<V> {
+        typedef typename vector_scalar_unary_functor<V>::value_type value_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const vector_expression<E> &e) { 
+            typedef typename E::size_type vector_size_type;
+            vector_size_type size (e ().size ());
+            result_type sumsq = result_type (0);
+            result_type sum = result_type (0);
+            for (vector_size_type i = 0; i < size; ++ i) {
+                sumsq += e () (i) * e () (i);
+                sum += e () (i);
+            }
+            return (sumsq - (sum * sum) / size) / size;
+        }
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) { 
+            result_type sumsq = result_type (0);
+            result_type sum = result_type (0);
+            D i (0);
+            while (++i <= size) {
+                sumsq += *it * *it;
+                sum += *it;
+                ++ it;
+            }
+            return (sumsq - (sum * sum) / size) / size;
+        }
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            result_type sumsq = result_type (0);
+            result_type sum = result_type (0);
+            typedef typename I::difference_type vector_difference_type;
+            vector_difference_type size (0);
+            while (it != it_end) {
+                sumsq += *it * *it;
+                sum += *it;
+                ++ it;
+                ++ size;
+            }
+            return (sumsq - (sum * sum) / size) / size;
+        }
+    };
+
+    template<class V>
+    struct vector_variance_iterative: 
+        public vector_scalar_unary_functor<V> {
+        typedef typename vector_scalar_unary_functor<V>::value_type value_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const vector_expression<E> &e) { 
+            result_type mean = result_type (0);
+            result_type var = result_type (0);
+            result_type del;
+            typedef typename E::size_type vector_size_type;
+            vector_size_type size (e ().size ());
+            for (vector_size_type i = 0; i < size; ++ i) {
+                del = e () (i) - mean;
+                mean += del / (i + 1);
+                var += del * (e () (i) - mean);
+            }
+            return var / size;
+        }
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) { 
+            result_type mean = result_type (0);
+            result_type n = result_type (0);
+            result_type var = result_type (0);
+            result_type del;
+            while (++ n <= size){
+                del = *it - mean;
+                mean += del / n;
+                var += del * (*it - mean);
+                ++ it;
+            }
+            return var / size; 
+        }
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            typedef typename I::difference_type vector_difference_type;
+            result_type mean = result_type (0);
+            vector_difference_type n (0);
+            result_type var = result_type (0);
+            result_type del;
+            while (it != it_end)  {
+                ++ n;
+                del = *it - mean;
+                mean += del / n;
+                var += del * (*it - mean);
+                ++ it;
+            }
+            return var / n; 
+        }
+    };
+
     // Unary returning real scalar 
     template<class V>
     struct vector_scalar_real_unary_functor {
