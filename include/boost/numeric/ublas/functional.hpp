@@ -471,7 +471,8 @@ namespace boost { namespace numeric { namespace ublas {
     struct vector_mean: 
         public vector_scalar_unary_functor<V> {
         typedef typename vector_scalar_unary_functor<V>::value_type value_type;
-        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        // typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
@@ -514,7 +515,8 @@ namespace boost { namespace numeric { namespace ublas {
     struct vector_mean_iterative: 
         public vector_scalar_unary_functor<V> {
         typedef typename vector_scalar_unary_functor<V>::value_type value_type;
-        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        // typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
@@ -558,7 +560,8 @@ namespace boost { namespace numeric { namespace ublas {
     struct vector_variance: 
         public vector_scalar_unary_functor<V> {
         typedef typename vector_scalar_unary_functor<V>::value_type value_type;
-        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        // typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
@@ -609,7 +612,8 @@ namespace boost { namespace numeric { namespace ublas {
     struct vector_variance_iterative: 
         public vector_scalar_unary_functor<V> {
         typedef typename vector_scalar_unary_functor<V>::value_type value_type;
-        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        // typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
