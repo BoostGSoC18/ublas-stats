@@ -1559,7 +1559,64 @@ namespace boost { namespace numeric { namespace ublas {
         }
     };
 
+    template<class M>
+    struct matrix_variance:
+        public matrix_scalar_unary_functor<M> {
+        typedef typename matrix_scalar_unary_functor<M>::value_type value_type;
+        // typedef typename matrix_scalar_unary_functor<M>::result_type result_type;
+        typedef double result_type;
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const matrix_expression<E> &e) { 
+            typedef typename E::size_type matrix_size_type;
+            matrix_size_type size1 (e ().size1 ());
+            matrix_size_type size2 (e ().size2 ());
+            matrix_size_type num_elements = size1 * size2;
+            result_type sumsq = result_type (0);
+            result_type sum = result_type (0);
+            for (matrix_size_type i = 0; i < size1; ++ i) {
+                for (matrix_size_type j = 0; j < size2; ++ j) {
+                    sumsq += e () (i, j) * e () (i, j);
+                    sum += e () (i, j);
+                }
+            }
+            return (sumsq - (sum * sum) / num_elements) / (num_elements);
+        }
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) { 
+            result_type sumsq = result_type (0);
+            result_type sum = result_type (0);
+            D i (0);
+            while (++i <= size) {
+                sumsq += *it * *it;
+                sum += *it;
+                ++ it;
+            }
+            return (sumsq - (sum * sum) / size) / size;
+        }
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            result_type sumsq = result_type (0);
+            result_type sum = result_type (0);
+            typedef typename I::difference_type matrix_difference_type;
+            matrix_difference_type size (0);
+            while (it != it_end) {
+                sumsq += *it * *it;
+                sum += *it;
+                ++ it;
+                ++ size;
+            }
+            return (sumsq - (sum * sum) / size) / size;
+        }
+    };
+
     // Unary returning vector of value_type TV
+
     template<class M, class TV>
     struct matrix_vector_unary_functor {
         typedef typename M::value_type value_type;
@@ -1881,6 +1938,86 @@ namespace boost { namespace numeric { namespace ublas {
         // }
     };
 
+    template<class M, class TV>
+    struct matrix_variance_axis: 
+        public matrix_vector_unary_functor<M, TV> {
+        typedef typename matrix_vector_unary_functor<M, TV>::value_type value_type;
+        typedef typename matrix_vector_unary_functor<M, TV>::result_value_type result_value_type;
+        typedef typename matrix_vector_unary_functor<M, result_value_type>::result_type result_type;
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const matrix_expression<E> &e, typename E::size_type axis) {
+            typedef typename E::size_type matrix_size_type;
+            matrix_size_type size1 (e ().size1 ());
+            matrix_size_type size2 (e ().size2 ());
+
+            matrix_size_type result_vector_size = matrix_size_type(0);
+            if (axis == 0)
+                result_vector_size = size2;
+            else if (axis == 1)
+                result_vector_size = size1;
+
+            result_type t = result_type (result_vector_size);
+            for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
+                t (i) = apply (e, axis, i);
+            }
+            return t;
+        }
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_value_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
+            typedef typename E::size_type matrix_size_type;
+            matrix_size_type size1 (e ().size1 ());
+            matrix_size_type size2 (e ().size2 ());
+
+            result_value_type sumsq = result_value_type (0);
+            result_value_type sum = result_value_type (0);
+
+            if (axis == 0){
+                for (matrix_size_type i = 0; i < size1; ++ i) {
+                    sumsq += e () (i, index) * e () (i, index);
+                    sum += e () (i, index);
+                }
+                return (sumsq - (sum * sum) / size1) / size1;
+            }
+            else if (axis == 1){
+                for (matrix_size_type i = 0; i < size2; ++ i) {
+                    sumsq += e () (index, i) * e () (index, i);
+                    sum += e () (index, i);
+                }
+                return (sumsq - (sum * sum) / size2) / size2;
+            }
+
+        }
+
+        // Dense case
+        // template<class D, class I>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (D size, I it) { 
+        //     result_type t = result_type (0);
+        //     while (-- size >= 0) {
+        //         t += *it;
+        //         ++ it;
+        //     }
+        //     return t / size; 
+        // }
+        // // Sparse case
+        // template<class I>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (I it, const I &it_end) {
+        //     result_type t = result_type (0);
+        //     typedef typename I::difference_type matrix_difference_type;
+        //     matrix_difference_type size (0);
+        //     while (it != it_end) {
+        //         t += *it;
+        //         ++ it;
+        //         ++ size;
+        //     }
+        //     return t / size;
+        // }
+    };
 
     // Binary returning vector
     template<class M1, class M2, class TV>
