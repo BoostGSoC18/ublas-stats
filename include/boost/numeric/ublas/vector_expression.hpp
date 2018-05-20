@@ -1580,6 +1580,24 @@ namespace boost { namespace numeric { namespace ublas {
 #endif
     };
 
+    // min v = min (v [i])
+    template<class E>
+    BOOST_UBLAS_INLINE
+    typename vector_scalar_unary_traits<E, vector_min<E> >::result_type
+    min (const vector_expression<E> &e) {
+        typedef typename vector_scalar_unary_traits<E, vector_min<E> >::expression_type expression_type;
+        return expression_type (e ());
+    }
+
+    // max v = max (v [i])
+    template<class E>
+    BOOST_UBLAS_INLINE
+    typename vector_scalar_unary_traits<E, vector_max<E> >::result_type
+    max (const vector_expression<E> &e) {
+        typedef typename vector_scalar_unary_traits<E, vector_max<E> >::expression_type expression_type;
+        return expression_type (e ());
+    }
+
     // sum v = sum (v [i])
     template<class E>
     BOOST_UBLAS_INLINE

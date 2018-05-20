@@ -5606,6 +5606,22 @@ namespace boost { namespace numeric { namespace ublas {
 
     template<class E>
     BOOST_UBLAS_INLINE
+    typename matrix_scalar_unary_traits<E, matrix_min<E> >::result_type
+    min (const matrix_expression<E> &e) {
+        typedef typename matrix_scalar_unary_traits<E, matrix_min<E> >::expression_type expression_type;
+        return expression_type (e ());
+    }
+
+    template<class E>
+    BOOST_UBLAS_INLINE
+    typename matrix_scalar_unary_traits<E, matrix_max<E> >::result_type
+    max (const matrix_expression<E> &e) {
+        typedef typename matrix_scalar_unary_traits<E, matrix_max<E> >::expression_type expression_type;
+        return expression_type (e ());
+    }
+
+    template<class E>
+    BOOST_UBLAS_INLINE
     typename matrix_scalar_unary_traits<E, matrix_mean<E> >::result_type
     mean (const matrix_expression<E> &e) {
         typedef typename matrix_scalar_unary_traits<E, matrix_mean<E> >::expression_type expression_type;
@@ -5643,6 +5659,158 @@ namespace boost { namespace numeric { namespace ublas {
         typedef typename matrix_scalar_unary_traits<E, matrix_norm_inf<E> >::expression_type expression_type;
         return expression_type (e ());
     }
+
+
+
+
+
+    template<class E, class F>
+    class matrix_vector_unary:
+        public vector_expression<matrix_vector_unary<E, F> > {
+    public:
+        typedef E expression_type;
+        typedef F functor_type;
+        typedef typename F::result_type value_type;
+        typedef typename E::const_closure_type expression_closure_type;
+
+    private:
+        typedef matrix_vector_unary<E, F> self_type;
+    public:
+#ifdef BOOST_UBLAS_ENABLE_PROXY_SHORTCUTS
+        using vector_expression<self_type>::operator ();
+#endif
+        static const unsigned complexity = 1;
+        typedef typename E::size_type size_type;
+        typedef typename E::difference_type difference_type;
+        typedef value_type const_reference;
+        typedef const_reference reference;
+        typedef const self_type const_closure_type;
+        typedef const_closure_type closure_type;
+        typedef unknown_storage_tag storage_category;
+
+        // Construction and destruction
+        BOOST_UBLAS_INLINE
+        explicit matrix_vector_unary (const expression_type &e, size_type axis):
+            e_ (e), axis_(axis) {}
+
+        // Accessors
+        BOOST_UBLAS_INLINE
+        size_type size () const {
+            return e_.size ();
+        }
+
+    private:
+        // Expression accessors
+        BOOST_UBLAS_INLINE
+        const expression_closure_type &expression () const {
+            return e_;
+        }
+
+    public:
+        // Element access
+        BOOST_UBLAS_INLINE
+        typename F::result_value_type operator () (size_type i) const {
+            return functor_type::apply (e_, axis_, i);
+        }
+
+        // Closure comparison
+        // BOOST_UBLAS_INLINE
+        // bool same_closure (const matrix_vector_binary1 &mvb1) const {
+        //     return (*this).expression1 ().same_closure (mvb1.expression1 ()) &&
+        //            (*this).expression2 ().same_closure (mvb1.expression2 ());
+        // }        
+
+        // Iterator types
+    // private:
+    //     typedef typename E::const_iterator1 const_subiterator_type;
+    //     typedef const value_type *const_pointer;
+
+//     public:
+// #ifdef BOOST_UBLAS_USE_INDEXED_ITERATOR
+//         typedef indexed_const_iterator<const_closure_type, typename const_subiterator_type::iterator_category> const_iterator;
+//         typedef const_iterator iterator;
+// #else
+//         class const_iterator;
+//         typedef const_iterator iterator;
+// #endif
+
+        // Element lookup
+//         BOOST_UBLAS_INLINE
+//         const_iterator find (size_type i) const {
+// #ifdef BOOST_UBLAS_USE_INDEXED_ITERATOR
+//             const_subiterator1_type it1 (e1_.find1 (0, i, 0));
+//             return const_iterator (*this, it1.index1 ());
+// #else
+//             return const_iterator (*this, e1_.find1 (0, i, 0));
+// #endif
+//         }
+
+// #ifndef BOOST_UBLAS_USE_INDEXED_ITERATOR
+//         class const_iterator:
+//             public container_const_reference<matrix_vector_unary>,
+//             public iterator_base_traits<typename iterator_restrict_traits<typename E1::const_iterator1::iterator_category,
+//                                                                           typename E2::const_iterator::iterator_category>::iterator_category>::template
+//                 iterator_base<const_iterator, value_type>::type {
+//         public:
+//             typedef typename iterator_restrict_traits<typename E1::const_iterator1::iterator_category, 
+//                                                       typename E2::const_iterator::iterator_category>::iterator_category iterator_category;
+//             typedef typename matrix_vector_binary1::difference_type difference_type;
+//             typedef typename matrix_vector_binary1::value_type value_type;
+//             typedef typename matrix_vector_binary1::const_reference reference;
+//             typedef typename matrix_vector_binary1::const_pointer pointer;
+
+
+
+
+
+
+
+    public:
+        BOOST_UBLAS_INLINE
+        operator value_type () const {
+            return functor_type::apply (e_, axis_);
+        }
+
+    private:
+        expression_closure_type e_;
+        size_type axis_;
+    };
+
+    template<class E, class F>
+    struct matrix_vector_unary_traits {
+        typedef matrix_vector_unary<E, F> expression_type;
+#ifndef BOOST_UBLAS_SIMPLE_ET_DEBUG
+        typedef expression_type result_type;
+#else
+        typedef typename F::result_type result_type;
+#endif
+    };
+
+    template<class E>
+    BOOST_UBLAS_INLINE
+    typename matrix_vector_unary_traits<E, matrix_min_axis<E, typename E::value_type> >::result_type
+    min (const matrix_expression<E> &e, typename E::size_type axis) {
+        typedef typename matrix_vector_unary_traits<E, matrix_min_axis<E, typename E::value_type> >::expression_type expression_type;
+        return expression_type (e (), axis);
+    }
+
+    template<class E>
+    BOOST_UBLAS_INLINE
+    typename matrix_vector_unary_traits<E, matrix_max_axis<E, typename E::value_type> >::result_type
+    max (const matrix_expression<E> &e, typename E::size_type axis) {
+        typedef typename matrix_vector_unary_traits<E, matrix_max_axis<E, typename E::value_type> >::expression_type expression_type;
+        return expression_type (e (), axis);
+    }
+
+    template<class E>
+    BOOST_UBLAS_INLINE
+    typename matrix_vector_unary_traits<E, matrix_mean_axis<E, double> >::result_type
+    mean (const matrix_expression<E> &e, typename E::size_type axis = 0) {
+        typedef typename matrix_vector_unary_traits<E, matrix_mean_axis<E, double> >::expression_type expression_type;
+        return expression_type (e (), axis);
+    }
+
+
 
 }}}
 

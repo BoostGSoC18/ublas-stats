@@ -14,23 +14,38 @@
 
 int main () {
     using namespace boost::numeric::ublas;
-    matrix<double> m (3, 3);
+    matrix<int> m (3, 3);
     for (unsigned i = 0; i < m.size1 (); ++ i) {
         for (unsigned j = 0; j < m.size2 (); ++ j) {
             m (i, j) = i+j;
         }
     }
 
-    // std::cout << maxk (m, 3) << std::endl;
-    // std::cout << mink (m, 3) << std::endl;
+    m (0, 0) = 3;
+    m (1, 2) = 1;
+
+    std::cout << min (m) << std::endl;
+    for (unsigned i = 0; i < 3; ++ i) {
+        std::cout << min (m, 1) (i) << std::endl;
+    }
+    std::cout << max (m) << std::endl;
+    for (unsigned i = 0; i < 3; ++ i) {
+        std::cout << max (m, 1) (i) << std::endl;
+    }
 
     // std::cout << sum (m) << std::endl;
     std::cout << mean (m) << std::endl;
     std::cout << mean_iterative (m) << std::endl;
+    
+    // vector<double> tmp = mean (m, 0);
+    for (unsigned i = 0; i < 3; ++ i) {
+        std::cout << mean (m, 1) (i) << std::endl;
+    }
+    
     // std::cout << median (m) << std::endl;
     // std::cout << mode (m) << std::endl;
-    // std::cout << variance (m) << std::endl;
-    // std::cout << variance_iterative (m) << std::endl;
+    std::cout << variance (m) << std::endl;
+    std::cout << variance_iterative (m) << std::endl;
     std::cout << norm_1 (m) << std::endl;
     std::cout << norm_frobenius (m) << std::endl;
     std::cout << norm_inf (m) << std::endl;

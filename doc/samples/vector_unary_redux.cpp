@@ -18,8 +18,8 @@ int main () {
     for (unsigned i = 0; i < v.size (); ++ i)
         v (i) = i;
 
-    // std::cout << maxk (v, 3) << std::endl;
-    // std::cout << mink (v, 3) << std::endl;
+    std::cout << min (v) << std::endl;
+    std::cout << max (v) << std::endl;
 
     std::cout << sum (v) << std::endl;
     std::cout << mean (v) << std::endl;
