@@ -5712,7 +5712,10 @@ namespace boost { namespace numeric { namespace ublas {
         // Accessors
         BOOST_UBLAS_INLINE
         size_type size () const {
-            return e_.size ();
+            if (axis_ == 0)
+                return e_.size1 ();
+            else if (axis_ == 1)
+                return e_.size2 ();
         }
 
     private:
@@ -5725,55 +5728,259 @@ namespace boost { namespace numeric { namespace ublas {
     public:
         // Element access
         BOOST_UBLAS_INLINE
-        typename F::result_value_type operator () (size_type i) const {
+        typename F::result_type operator () (size_type i) const {
             return functor_type::apply (e_, axis_, i);
         }
 
         // Closure comparison
-        // BOOST_UBLAS_INLINE
-        // bool same_closure (const matrix_vector_binary1 &mvb1) const {
-        //     return (*this).expression1 ().same_closure (mvb1.expression1 ()) &&
-        //            (*this).expression2 ().same_closure (mvb1.expression2 ());
-        // }        
+        BOOST_UBLAS_INLINE
+        bool same_closure (const matrix_vector_unary &mvu) const {
+            return (*this).expression ().same_closure (mvu.expression ());
+        }
 
         // Iterator types
-    // private:
-    //     typedef typename E::const_iterator1 const_subiterator_type;
-    //     typedef const value_type *const_pointer;
+    private:
+        typedef typename E::const_iterator1 const_subiterator_type;
+        // typedef typename E::const_iterator2 const_subiterator2_type;
+        typedef const value_type *const_pointer;
 
-//     public:
-// #ifdef BOOST_UBLAS_USE_INDEXED_ITERATOR
-//         typedef indexed_const_iterator<const_closure_type, typename const_subiterator_type::iterator_category> const_iterator;
-//         typedef const_iterator iterator;
-// #else
-//         class const_iterator;
-//         typedef const_iterator iterator;
-// #endif
+    public:
+#ifdef BOOST_UBLAS_USE_INDEXED_ITERATOR
+        typedef indexed_const_iterator<const_closure_type, typename const_subiterator_type::iterator_category> const_iterator;
+        typedef const_iterator iterator;
+#else
+        class const_iterator;
+        typedef const_iterator iterator;
+#endif
 
         // Element lookup
-//         BOOST_UBLAS_INLINE
-//         const_iterator find (size_type i) const {
-// #ifdef BOOST_UBLAS_USE_INDEXED_ITERATOR
-//             const_subiterator1_type it1 (e1_.find1 (0, i, 0));
-//             return const_iterator (*this, it1.index1 ());
+        BOOST_UBLAS_INLINE
+        const_iterator find (size_type i) const {
+#ifdef BOOST_UBLAS_USE_INDEXED_ITERATOR
+            if (axis_ == 0) {
+                const_subiterator_type it (e_.find2 (0, 0, i));
+                return const_iterator (*this, it.index2 ());
+            }
+            else if (axis_ == 1) {
+                const_subiterator_type it (e_.find1 (0, i, 0));
+                return const_iterator (*this, it.index1 ());
+            }
+#else
+            if (axis_ == 0)
+                return const_iterator (*this, e_.find2 (0, 0, i));
+            else if (axis_ == 1)
+                return const_iterator (*this, e_.find1 (0, i, 0));
+#endif
+        }
+
+#ifndef BOOST_UBLAS_USE_INDEXED_ITERATOR
+        class const_iterator:
+            public container_const_reference<matrix_vector_unary>,
+            public iterator_base_traits< typename E::const_iterator1::iterator_category>::template
+                iterator_base<const_iterator, value_type>::type {
+        public:
+            typedef typename E::const_iterator1::iterator_category iterator_category;
+            typedef typename matrix_vector_unary::difference_type difference_type;
+            typedef typename matrix_vector_unary::value_type value_type;
+            typedef typename matrix_vector_unary::const_reference reference;
+            typedef typename matrix_vector_unary::const_pointer pointer;
+
+//             // Construction and destruction
+#ifdef BOOST_UBLAS_USE_INVARIANT_HOISTING
+            BOOST_UBLAS_INLINE
+            const_iterator ():
+                container_const_reference<self_type> (), it_ () {}
+                // container_const_reference<self_type> (), it_ (), e_begin_ (), e_end_ () {}
+            BOOST_UBLAS_INLINE
+            const_iterator (const self_type &mvu, const const_subiterator_type &it):
+                container_const_reference<self_type> (mvu), it_ (it) {}
+                // container_const_reference<self_type> (mvu), it_ (it), e2_begin_ (mvb.expression2 ().begin ()), e2_end_ (mvb.expression2 ().end ()) {}
+#else
+//             BOOST_UBLAS_INLINE
+//             const_iterator ():
+//                 container_const_reference<self_type> (), it1_ () {}
+//             BOOST_UBLAS_INLINE
+//             const_iterator (const self_type &mvb, const const_subiterator1_type &it1):
+//                 container_const_reference<self_type> (mvb), it1_ (it1) {}
+#endif
+
+//         private:
+//             // Dense random access specialization
+//             BOOST_UBLAS_INLINE
+//             value_type dereference (dense_random_access_iterator_tag) const {
+//                 const self_type &mvb = (*this) ();
+// #ifdef BOOST_UBLAS_USE_INDEXING
+//                 return mvb (index ());
+// #elif BOOST_UBLAS_USE_ITERATING
+//                 difference_type size = BOOST_UBLAS_SAME (mvb.expression1 ().size2 (), mvb.expression2 ().size ());
+// #ifdef BOOST_UBLAS_USE_INVARIANT_HOISTING
+//                 return functor_type::apply (size, it1_.begin (), e2_begin_);
 // #else
-//             return const_iterator (*this, e1_.find1 (0, i, 0));
+//                 return functor_type::apply (size, it1_.begin (), mvb.expression2 ().begin ());
 // #endif
+// #else
+//                 difference_type size = BOOST_UBLAS_SAME (mvb.expression1 ().size2 (), mvb.expression2 ().size ());
+//                 if (size >= BOOST_UBLAS_ITERATOR_THRESHOLD)
+// #ifdef BOOST_UBLAS_USE_INVARIANT_HOISTING
+//                     return functor_type::apply (size, it1_.begin (), e2_begin_);
+// #else
+//                     return functor_type::apply (size, it1_.begin (), mvb.expression2 ().begin ());
+// #endif
+//                 else
+//                     return mvb (index ());
+// #endif
+//             }
+
+//             // Packed bidirectional specialization
+//             BOOST_UBLAS_INLINE
+//             value_type dereference (packed_random_access_iterator_tag) const {
+// #ifdef BOOST_UBLAS_USE_INVARIANT_HOISTING
+//                 return functor_type::apply (it1_.begin (), it1_.end (), e2_begin_, e2_end_);
+// #else
+//                 const self_type &mvb = (*this) ();
+// #ifndef BOOST_UBLAS_NO_NESTED_CLASS_RELATION
+//                 return functor_type::apply (it1_.begin (), it1_.end (),
+//                                         mvb.expression2 ().begin (), mvb.expression2 ().end ());
+// #else
+//                 return functor_type::apply (boost::numeric::ublas::begin (it1_, iterator1_tag ()),
+//                                         boost::numeric::ublas::end (it1_, iterator1_tag ()),
+//                                         mvb.expression2 ().begin (), mvb.expression2 ().end ());
+// #endif
+// #endif
+//             }
+
+//             // Sparse bidirectional specialization
+//             BOOST_UBLAS_INLINE
+//             value_type dereference (sparse_bidirectional_iterator_tag) const {
+// #ifdef BOOST_UBLAS_USE_INVARIANT_HOISTING
+//                 return functor_type::apply (it1_.begin (), it1_.end (), e2_begin_, e2_end_, sparse_bidirectional_iterator_tag ());
+// #else
+//                 const self_type &mvb = (*this) ();
+// #ifndef BOOST_UBLAS_NO_NESTED_CLASS_RELATION
+//                 return functor_type::apply (it1_.begin (), it1_.end (),
+//                                         mvb.expression2 ().begin (), mvb.expression2 ().end (), sparse_bidirectional_iterator_tag ());
+// #else
+//                 return functor_type::apply (boost::numeric::ublas::begin (it1_, iterator1_tag ()),
+//                                         boost::numeric::ublas::end (it1_, iterator1_tag ()),
+//                                         mvb.expression2 ().begin (), mvb.expression2 ().end (), sparse_bidirectional_iterator_tag ());
+// #endif
+// #endif
+//             }
+
+        public:
+            // Arithmetic
+            BOOST_UBLAS_INLINE
+            const_iterator &operator ++ () {
+                ++ it_;
+                return *this;
+            }
+//             BOOST_UBLAS_INLINE
+//             const_iterator &operator -- () {
+//                 -- it1_;
+//                 return *this;
+//             }
+//             BOOST_UBLAS_INLINE
+//             const_iterator &operator += (difference_type n) {
+//                 it1_ += n;
+//                 return *this;
+//             }
+//             BOOST_UBLAS_INLINE
+//             const_iterator &operator -= (difference_type n) {
+//                 it1_ -= n;
+//                 return *this;
+//             }
+//             BOOST_UBLAS_INLINE
+//             difference_type operator - (const const_iterator &it) const {
+//                 BOOST_UBLAS_CHECK ((*this) ().same_closure (it ()), external_logic ());
+//                 return it1_ - it.it1_;
+//             }
+
+//             // Dereference
+//             BOOST_UBLAS_INLINE
+//             const_reference operator * () const {
+//                 return dereference (iterator_category ());
+//             }
+//             BOOST_UBLAS_INLINE
+//             const_reference operator [] (difference_type n) const {
+//                 return *(*this + n);
+//             }
+
+//             // Index
+//             BOOST_UBLAS_INLINE
+//             size_type index () const {
+//                 return it1_.index1 ();
+//             }
+
+//             // Assignment
+//             BOOST_UBLAS_INLINE
+//             const_iterator &operator = (const const_iterator &it) {
+//                 container_const_reference<self_type>::assign (&it ());
+//                 it1_ = it.it1_;
+// #ifdef BOOST_UBLAS_USE_INVARIANT_HOISTING
+//                 e2_begin_ = it.e2_begin_;
+//                 e2_end_ = it.e2_end_;
+// #endif
+//                 return *this;
+//             }
+
+//             // Comparison
+//             BOOST_UBLAS_INLINE
+//             bool operator == (const const_iterator &it) const {
+//                 BOOST_UBLAS_CHECK ((*this) ().same_closure (it ()), external_logic ());
+//                 return it1_ == it.it1_;
+//             }
+//             BOOST_UBLAS_INLINE
+//             bool operator < (const const_iterator &it) const {
+//                 BOOST_UBLAS_CHECK ((*this) ().same_closure (it ()), external_logic ());
+//                 return it1_ < it.it1_;
+//             }
+
+        private:
+            const_subiterator_type it_;
+#ifdef BOOST_UBLAS_USE_INVARIANT_HOISTING
+            // Mutable due to assignment
+            // /* const */ const_subiterator2_type e2_begin_;
+            // /* const */ const_subiterator2_type e2_end_;
+#endif
+        };
+#endif
+
+//         BOOST_UBLAS_INLINE
+//         const_iterator begin () const {
+//             return find (0);
+//         }
+//         BOOST_UBLAS_INLINE
+//         const_iterator cbegin () const {
+//             return begin ();
+//         }
+//         BOOST_UBLAS_INLINE
+//         const_iterator end () const {
+//             return find (size ()); 
+//         }
+//         BOOST_UBLAS_INLINE
+//         const_iterator cend () const {
+//             return end ();
 //         }
 
-// #ifndef BOOST_UBLAS_USE_INDEXED_ITERATOR
-//         class const_iterator:
-//             public container_const_reference<matrix_vector_unary>,
-//             public iterator_base_traits<typename iterator_restrict_traits<typename E1::const_iterator1::iterator_category,
-//                                                                           typename E2::const_iterator::iterator_category>::iterator_category>::template
-//                 iterator_base<const_iterator, value_type>::type {
-//         public:
-//             typedef typename iterator_restrict_traits<typename E1::const_iterator1::iterator_category, 
-//                                                       typename E2::const_iterator::iterator_category>::iterator_category iterator_category;
-//             typedef typename matrix_vector_binary1::difference_type difference_type;
-//             typedef typename matrix_vector_binary1::value_type value_type;
-//             typedef typename matrix_vector_binary1::const_reference reference;
-//             typedef typename matrix_vector_binary1::const_pointer pointer;
+//         // Reverse iterator
+//         typedef reverse_iterator_base<const_iterator> const_reverse_iterator;
+
+//         BOOST_UBLAS_INLINE
+//         const_reverse_iterator rbegin () const {
+//             return const_reverse_iterator (end ());
+//         }
+//         BOOST_UBLAS_INLINE
+//         const_reverse_iterator crbegin () const {
+//             return rbegin ();
+//         }
+//         BOOST_UBLAS_INLINE
+//         const_reverse_iterator rend () const {
+//             return const_reverse_iterator (begin ());
+//         }
+//         BOOST_UBLAS_INLINE
+//         const_reverse_iterator crend () const {
+//             return rend ();
+//         }
 
 
 

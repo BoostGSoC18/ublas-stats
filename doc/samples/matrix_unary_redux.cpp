@@ -12,6 +12,8 @@
 
 #include <boost/numeric/ublas/matrix.hpp>
 
+#include <boost/numeric/ublas/io.hpp>
+
 int main () {
     using namespace boost::numeric::ublas;
     matrix<int> m (3, 3);
@@ -23,6 +25,11 @@ int main () {
 
     m (0, 0) = 3;
     m (1, 2) = 1;
+
+    vector<int> x (3);
+    x (0) = 1;
+    x (1) = 2;
+    x (2) = 3;
 
     // std::cout << min (m) << std::endl;
     // for (unsigned i = 0; i < 3; ++ i) {
@@ -40,13 +47,23 @@ int main () {
 
     // std::cout << mean (m) << std::endl;
     // std::cout << mean_iterative (m) << std::endl;
+
+    // std::cout << prod(m, x) << std::endl;
+    // vector<double> p = prod(m, x);
+    // std::cout << p << std::endl;
+    // p.const_iterator it = p.begin();
+
+    // for (unsigned i = 0; i < 3; ++ i) {
+    //     std::cout << prod (m, x) (i) << std::endl;
+    // }
     
-    // vector<double> tmp = mean (m, 0);
+    vector<double> p = mean (m, 0);
+    std::cout << p << std::endl;
     // for (unsigned i = 0; i < 3; ++ i) {
     //     std::cout << mean (m, 1) (i) << std::endl;
     // }
     
-    std::cout << variance (m) << std::endl;
+    // std::cout << variance (m) << std::endl;
     for (unsigned i = 0; i < 3; ++ i) {
         std::cout << variance (m, 0) (i) << std::endl;
     }

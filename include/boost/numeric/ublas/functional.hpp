@@ -1620,55 +1620,53 @@ namespace boost { namespace numeric { namespace ublas {
     template<class M, class TV>
     struct matrix_vector_unary_functor {
         typedef typename M::value_type value_type;
-        typedef TV result_value_type;
-        typedef vector_container< vector< result_value_type > > result_type;
+        typedef TV result_type;
     };
 
     template<class M, class TV>
     struct matrix_min_axis: 
         public matrix_vector_unary_functor<M, TV> {
         typedef typename matrix_vector_unary_functor<M, TV>::value_type value_type;
-        typedef typename matrix_vector_unary_functor<M, TV>::result_value_type result_value_type;
-        typedef typename matrix_vector_unary_functor<M, result_value_type>::result_type result_type;
+        typedef typename matrix_vector_unary_functor<M, TV>::result_type result_type;
+
+        // template<class E>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (const matrix_expression<E> &e, typename E::size_type axis) { 
+        //     typedef typename E::size_type matrix_size_type;
+        //     matrix_size_type size1 (e ().size1 ());
+        //     matrix_size_type size2 (e ().size2 ());
+
+        //     matrix_size_type result_vector_size = matrix_size_type(0);
+        //     if (axis == 0)
+        //         result_vector_size = size2;
+        //     else if (axis == 1)
+        //         result_vector_size = size1;
+
+        //     result_type t = result_type (result_vector_size);
+        //     for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
+        //         t (i) = apply (e, axis, i);
+        //     }
+        //     return t;
+        // }
 
         template<class E>
         static BOOST_UBLAS_INLINE
-        result_type apply (const matrix_expression<E> &e, typename E::size_type axis) { 
+        result_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
             typedef typename E::size_type matrix_size_type;
             matrix_size_type size1 (e ().size1 ());
             matrix_size_type size2 (e ().size2 ());
 
-            matrix_size_type result_vector_size = matrix_size_type(0);
-            if (axis == 0)
-                result_vector_size = size2;
-            else if (axis == 1)
-                result_vector_size = size1;
-
-            result_type t = result_type (result_vector_size);
-            for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
-                t (i) = apply (e, axis, i);
-            }
-            return t;
-        }
-
-        template<class E>
-        static BOOST_UBLAS_INLINE
-        result_value_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
-            typedef typename E::size_type matrix_size_type;
-            matrix_size_type size1 (e ().size1 ());
-            matrix_size_type size2 (e ().size2 ());
-
-            result_value_type vmin = result_value_type(0);
+            result_type vmin = result_type(0);
             
             if (axis == 0){
-                vmin = result_value_type(e () (0, index));
+                vmin = result_type(e () (0, index));
                 for (matrix_size_type i = 0; i < size1; ++ i)
                     if (vmin > e () (i, index))
                         vmin = e () (i, index);
                 return vmin;
             }
             else if (axis == 1){
-                vmin = result_value_type(e () (index, 0));
+                vmin = result_type(e () (index, 0));
                 for (matrix_size_type i = 0; i < size2; ++ i)
                     if (vmin > e () (index, i))
                         vmin = e () (index, i);
@@ -1707,47 +1705,46 @@ namespace boost { namespace numeric { namespace ublas {
     struct matrix_max_axis: 
         public matrix_vector_unary_functor<M, TV> {
         typedef typename matrix_vector_unary_functor<M, TV>::value_type value_type;
-        typedef typename matrix_vector_unary_functor<M, TV>::result_value_type result_value_type;
-        typedef typename matrix_vector_unary_functor<M, result_value_type>::result_type result_type;
+        typedef typename matrix_vector_unary_functor<M, TV>::result_type result_type;
+
+        // template<class E>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (const matrix_expression<E> &e, typename E::size_type axis) { 
+        //     typedef typename E::size_type matrix_size_type;
+        //     matrix_size_type size1 (e ().size1 ());
+        //     matrix_size_type size2 (e ().size2 ());
+
+        //     matrix_size_type result_vector_size = matrix_size_type(0);
+        //     if (axis == 0)
+        //         result_vector_size = size2;
+        //     else if (axis == 1)
+        //         result_vector_size = size1;
+
+        //     result_type t = result_type (result_vector_size);
+        //     for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
+        //         t (i) = apply (e, axis, i);
+        //     }
+        //     return t;
+        // }
 
         template<class E>
         static BOOST_UBLAS_INLINE
-        result_type apply (const matrix_expression<E> &e, typename E::size_type axis) { 
+        result_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
             typedef typename E::size_type matrix_size_type;
             matrix_size_type size1 (e ().size1 ());
             matrix_size_type size2 (e ().size2 ());
 
-            matrix_size_type result_vector_size = matrix_size_type(0);
-            if (axis == 0)
-                result_vector_size = size2;
-            else if (axis == 1)
-                result_vector_size = size1;
-
-            result_type t = result_type (result_vector_size);
-            for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
-                t (i) = apply (e, axis, i);
-            }
-            return t;
-        }
-
-        template<class E>
-        static BOOST_UBLAS_INLINE
-        result_value_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
-            typedef typename E::size_type matrix_size_type;
-            matrix_size_type size1 (e ().size1 ());
-            matrix_size_type size2 (e ().size2 ());
-
-            result_value_type vmax = result_value_type(0);
+            result_type vmax = result_type(0);
             
             if (axis == 0){
-                vmax = result_value_type(e () (0, index));
+                vmax = result_type(e () (0, index));
                 for (matrix_size_type i = 0; i < size1; ++ i)
                     if (vmax < e () (i, index))
                         vmax = e () (i, index);
                 return vmax;
             }
             else if (axis == 1){
-                vmax = result_value_type(e () (index, 0));
+                vmax = result_type(e () (index, 0));
                 for (matrix_size_type i = 0; i < size2; ++ i)
                     if (vmax < e () (index, i))
                         vmax = e () (index, i);
@@ -1786,37 +1783,36 @@ namespace boost { namespace numeric { namespace ublas {
     struct matrix_sum_axis: 
         public matrix_vector_unary_functor<M, TV> {
         typedef typename matrix_vector_unary_functor<M, TV>::value_type value_type;
-        typedef typename matrix_vector_unary_functor<M, TV>::result_value_type result_value_type;
-        typedef typename matrix_vector_unary_functor<M, result_value_type>::result_type result_type;
+        typedef typename matrix_vector_unary_functor<M, TV>::result_type result_type;
+
+        // template<class E>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (const matrix_expression<E> &e, typename E::size_type axis) {
+        //     typedef typename E::size_type matrix_size_type;
+        //     matrix_size_type size1 (e ().size1 ());
+        //     matrix_size_type size2 (e ().size2 ());
+
+        //     matrix_size_type result_vector_size = matrix_size_type(0);
+        //     if (axis == 0)
+        //         result_vector_size = size2;
+        //     else if (axis == 1)
+        //         result_vector_size = size1;
+
+        //     result_type t = result_type (result_vector_size);
+        //     for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
+        //         t (i) = apply (e, axis, i);
+        //     }
+        //     return t;
+        // }
 
         template<class E>
         static BOOST_UBLAS_INLINE
-        result_type apply (const matrix_expression<E> &e, typename E::size_type axis) {
+        result_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
             typedef typename E::size_type matrix_size_type;
             matrix_size_type size1 (e ().size1 ());
             matrix_size_type size2 (e ().size2 ());
 
-            matrix_size_type result_vector_size = matrix_size_type(0);
-            if (axis == 0)
-                result_vector_size = size2;
-            else if (axis == 1)
-                result_vector_size = size1;
-
-            result_type t = result_type (result_vector_size);
-            for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
-                t (i) = apply (e, axis, i);
-            }
-            return t;
-        }
-
-        template<class E>
-        static BOOST_UBLAS_INLINE
-        result_value_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
-            typedef typename E::size_type matrix_size_type;
-            matrix_size_type size1 (e ().size1 ());
-            matrix_size_type size2 (e ().size2 ());
-
-            result_value_type vsum = result_value_type(0);
+            result_type vsum = result_type(0);
             
             if (axis == 0){
                 for (matrix_size_type i = 0; i < size1; ++ i) {
@@ -1864,37 +1860,36 @@ namespace boost { namespace numeric { namespace ublas {
     struct matrix_mean_axis: 
         public matrix_vector_unary_functor<M, TV> {
         typedef typename matrix_vector_unary_functor<M, TV>::value_type value_type;
-        typedef typename matrix_vector_unary_functor<M, TV>::result_value_type result_value_type;
-        typedef typename matrix_vector_unary_functor<M, result_value_type>::result_type result_type;
+        typedef typename matrix_vector_unary_functor<M, TV>::result_type result_type;
+
+        // template<class E>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (const matrix_expression<E> &e, typename E::size_type axis) {
+        //     typedef typename E::size_type matrix_size_type;
+        //     matrix_size_type size1 (e ().size1 ());
+        //     matrix_size_type size2 (e ().size2 ());
+
+        //     matrix_size_type result_vector_size = matrix_size_type(0);
+        //     if (axis == 0)
+        //         result_vector_size = size2;
+        //     else if (axis == 1)
+        //         result_vector_size = size1;
+
+        //     result_type t = result_type (result_vector_size);
+        //     for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
+        //         t (i) = apply (e, axis, i);
+        //     }
+        //     return t;
+        // }
 
         template<class E>
         static BOOST_UBLAS_INLINE
-        result_type apply (const matrix_expression<E> &e, typename E::size_type axis) {
+        result_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
             typedef typename E::size_type matrix_size_type;
             matrix_size_type size1 (e ().size1 ());
             matrix_size_type size2 (e ().size2 ());
 
-            matrix_size_type result_vector_size = matrix_size_type(0);
-            if (axis == 0)
-                result_vector_size = size2;
-            else if (axis == 1)
-                result_vector_size = size1;
-
-            result_type t = result_type (result_vector_size);
-            for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
-                t (i) = apply (e, axis, i);
-            }
-            return t;
-        }
-
-        template<class E>
-        static BOOST_UBLAS_INLINE
-        result_value_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
-            typedef typename E::size_type matrix_size_type;
-            matrix_size_type size1 (e ().size1 ());
-            matrix_size_type size2 (e ().size2 ());
-
-            result_value_type vsum = result_value_type(0);
+            result_type vsum = result_type(0);
             
             if (axis == 0){
                 for (matrix_size_type i = 0; i < size1; ++ i) {
@@ -1942,38 +1937,37 @@ namespace boost { namespace numeric { namespace ublas {
     struct matrix_variance_axis: 
         public matrix_vector_unary_functor<M, TV> {
         typedef typename matrix_vector_unary_functor<M, TV>::value_type value_type;
-        typedef typename matrix_vector_unary_functor<M, TV>::result_value_type result_value_type;
-        typedef typename matrix_vector_unary_functor<M, result_value_type>::result_type result_type;
+        typedef typename matrix_vector_unary_functor<M, TV>::result_type result_type;
+
+        // template<class E>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (const matrix_expression<E> &e, typename E::size_type axis) {
+        //     typedef typename E::size_type matrix_size_type;
+        //     matrix_size_type size1 (e ().size1 ());
+        //     matrix_size_type size2 (e ().size2 ());
+
+        //     matrix_size_type result_vector_size = matrix_size_type(0);
+        //     if (axis == 0)
+        //         result_vector_size = size2;
+        //     else if (axis == 1)
+        //         result_vector_size = size1;
+
+        //     result_type t = result_type (result_vector_size);
+        //     for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
+        //         t (i) = apply (e, axis, i);
+        //     }
+        //     return t;
+        // }
 
         template<class E>
         static BOOST_UBLAS_INLINE
-        result_type apply (const matrix_expression<E> &e, typename E::size_type axis) {
+        result_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
             typedef typename E::size_type matrix_size_type;
             matrix_size_type size1 (e ().size1 ());
             matrix_size_type size2 (e ().size2 ());
 
-            matrix_size_type result_vector_size = matrix_size_type(0);
-            if (axis == 0)
-                result_vector_size = size2;
-            else if (axis == 1)
-                result_vector_size = size1;
-
-            result_type t = result_type (result_vector_size);
-            for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
-                t (i) = apply (e, axis, i);
-            }
-            return t;
-        }
-
-        template<class E>
-        static BOOST_UBLAS_INLINE
-        result_value_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) { 
-            typedef typename E::size_type matrix_size_type;
-            matrix_size_type size1 (e ().size1 ());
-            matrix_size_type size2 (e ().size2 ());
-
-            result_value_type sumsq = result_value_type (0);
-            result_value_type sum = result_value_type (0);
+            result_type sumsq = result_type (0);
+            result_type sum = result_type (0);
 
             if (axis == 0){
                 for (matrix_size_type i = 0; i < size1; ++ i) {
