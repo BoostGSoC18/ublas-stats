@@ -16,6 +16,7 @@
 #include <functional>
 
 #include <boost/core/ignore_unused.hpp>
+#include <boost/unordered_map.hpp>
 
 #include <boost/numeric/ublas/traits.hpp>
 #ifdef BOOST_UBLAS_USE_DUFF_DEVICE
@@ -663,6 +664,112 @@ namespace boost { namespace numeric { namespace ublas {
                 ++ it;
             }
             return var / n; 
+        }
+    };
+
+    template<class V>
+    struct vector_mode: 
+        public vector_scalar_unary_functor<V> {
+        typedef typename vector_scalar_unary_functor<V>::value_type value_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const vector_expression<E> &e) {
+            typedef typename E::size_type vector_size_type;
+            boost::unordered_map<result_type, vector_size_type> count_map(0);
+            vector_size_type size (e ().size ());
+            typename boost::unordered_map<result_type, vector_size_type>::iterator p;
+            // auto p = count_map.iterator;
+            for (vector_size_type i = 0; i < size; ++ i) {
+                p = count_map.find (e () (i));
+                if (p != count_map.end ())
+                    p->second += vector_size_type(1);
+                else
+                    count_map.emplace (e () (i), vector_size_type (1));
+            }
+            
+            result_type mode = result_type (0);
+            vector_size_type mode_val = vector_size_type(0);
+            p = count_map.begin();
+            while (p != count_map.end()) {
+                if (p->second > mode_val) {
+                    mode = p->first;
+                    mode_val = p->second;
+                }
+                else if (p->second == mode_val && p->first < mode)
+                    mode = p->first;
+                ++ p;
+            }
+            
+            return mode;
+        }
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) { 
+            boost::unordered_map<result_type, D> count_map;
+            
+            typename boost::unordered_map<result_type, D>::iterator p;
+            // auto p = count_map.iterator;
+            while (-- size >= 0) {
+                p = count_map.find (*it);
+                if ( p != count_map.end ())
+                    p->second += D(1);
+                else
+                    count_map.emplace (*it, D (1));
+                ++ it;
+            }
+            
+            result_type mode = result_type (0);
+            D mode_val = D(0);
+            p = count_map.begin();
+            while (p != count_map.end()) {
+                if (p->second > mode_val) {
+                    mode = p->first;
+                    mode_val = p->second;
+                }
+                else if (p->second == mode_val && p->first < mode)
+                    mode = p->first;
+                ++ p;
+            }
+            
+            return mode;
+        }
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            typedef typename I::difference_type vector_difference_type;
+
+            boost::unordered_map<result_type, vector_difference_type> count_map;
+            
+            typename boost::unordered_map<result_type, vector_difference_type>::iterator p;
+            // auto p = count_map.iterator;
+
+            while (it != it_end) {
+                p = count_map.find (*it);
+                if ( p != count_map.end ())
+                    p->second += vector_difference_type(1);
+                else
+                    count_map.emplace (*it, vector_difference_type (1));
+                ++ it;
+            }
+            
+            result_type mode = result_type (0);
+            vector_difference_type mode_val = vector_difference_type(0);
+            p = count_map.begin();
+            while (p != count_map.end()) {
+                if (p->second > mode_val) {
+                    mode = p->first;
+                    mode_val = p->second;
+                }
+                else if (p->second == mode_val && p->first < mode)
+                    mode = p->first;
+                ++ p;
+            }
+            
+            return mode;
         }
     };
 
@@ -1615,6 +1722,114 @@ namespace boost { namespace numeric { namespace ublas {
         }
     };
 
+    template<class V>
+    struct matrix_mode:
+        public matrix_scalar_unary_functor<V> {
+        typedef typename matrix_scalar_unary_functor<V>::value_type value_type;
+        typedef typename matrix_scalar_unary_functor<V>::result_type result_type;
+        
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const matrix_expression<E> &e) {
+            typedef typename E::size_type matrix_size_type;
+            boost::unordered_map<result_type, matrix_size_type> count_map;
+            matrix_size_type size1 (e ().size1 ());
+            matrix_size_type size2 (e ().size2 ());
+            typename boost::unordered_map<result_type, matrix_size_type>::iterator p;
+            // auto p = count_map.iterator;
+            for (matrix_size_type i = 0; i < size1; ++ i)
+                for (matrix_size_type j = 0; j < size2; ++ j) {
+                    p = count_map.find (e () (i, j));
+                    if (p != count_map.end ())
+                        p->second += matrix_size_type(1);
+                    else
+                        count_map.emplace (e () (i, j), matrix_size_type (1));
+                }
+            
+            result_type mode = result_type (0);
+            matrix_size_type mode_val = matrix_size_type(0);
+            p = count_map.begin();
+            while (p != count_map.end()) {
+                if (p->second > mode_val) {
+                    mode = p->first;
+                    mode_val = p->second;
+                }
+                else if (p->second == mode_val && p->first < mode)
+                    mode = p->first;
+                ++ p;
+            }
+            
+            return mode;
+        }
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) { 
+            boost::unordered_map<result_type, D> count_map;
+            
+            typename boost::unordered_map<result_type, D>::iterator p;
+            // auto p = count_map.iterator;
+            while (-- size >= 0) {
+                p = count_map.find (*it);
+                if ( p != count_map.end ())
+                    p->second += D(1);
+                else
+                    count_map.emplace (*it, D (1));
+                ++ it;
+            }
+            
+            result_type mode = result_type (0);
+            D mode_val = D(0);
+            p = count_map.begin();
+            while (p != count_map.end()) {
+                if (p->second > mode_val) {
+                    mode = p->first;
+                    mode_val = p->second;
+                }
+                else if (p->second == mode_val && p->first < mode)
+                    mode = p->first;
+                ++ p;
+            }
+            
+            return mode;
+        }
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            typedef typename I::difference_type matrix_difference_type;
+
+            boost::unordered_map<result_type, matrix_difference_type> count_map;
+            
+            typename boost::unordered_map<result_type, matrix_difference_type>::iterator p;
+            // auto p = count_map.iterator;
+
+            while (it != it_end) {
+                p = count_map.find (*it);
+                if ( p != count_map.end ())
+                    p->second += matrix_difference_type(1);
+                else
+                    count_map.emplace (*it, matrix_difference_type (1));
+                ++ it;
+            }
+            
+            result_type mode = result_type (0);
+            matrix_difference_type mode_val = matrix_difference_type(0);
+            p = count_map.begin();
+            while (p != count_map.end()) {
+                if (p->second > mode_val) {
+                    mode = p->first;
+                    mode_val = p->second;
+                }
+                else if (p->second == mode_val && p->first < mode)
+                    mode = p->first;
+                ++ p;
+            }
+            
+            return mode;
+        }
+    };
+
     // Unary returning vector of value_type TV
 
     template<class M, class TV>
@@ -1984,6 +2199,105 @@ namespace boost { namespace numeric { namespace ublas {
                 return (sumsq - (sum * sum) / size2) / size2;
             }
 
+        }
+
+        // Dense case
+        // template<class D, class I>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (D size, I it) { 
+        //     result_type t = result_type (0);
+        //     while (-- size >= 0) {
+        //         t += *it;
+        //         ++ it;
+        //     }
+        //     return t / size; 
+        // }
+        // // Sparse case
+        // template<class I>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (I it, const I &it_end) {
+        //     result_type t = result_type (0);
+        //     typedef typename I::difference_type matrix_difference_type;
+        //     matrix_difference_type size (0);
+        //     while (it != it_end) {
+        //         t += *it;
+        //         ++ it;
+        //         ++ size;
+        //     }
+        //     return t / size;
+        // }
+    };
+
+    template<class M, class TV>
+    struct matrix_mode_axis: 
+        public matrix_vector_unary_functor<M, TV> {
+        typedef typename matrix_vector_unary_functor<M, TV>::value_type value_type;
+        typedef typename matrix_vector_unary_functor<M, TV>::result_type result_type;
+
+        // template<class E>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (const matrix_expression<E> &e, typename E::size_type axis) {
+        //     typedef typename E::size_type matrix_size_type;
+        //     matrix_size_type size1 (e ().size1 ());
+        //     matrix_size_type size2 (e ().size2 ());
+
+        //     matrix_size_type result_vector_size = matrix_size_type(0);
+        //     if (axis == 0)
+        //         result_vector_size = size2;
+        //     else if (axis == 1)
+        //         result_vector_size = size1;
+
+        //     result_type t = result_type (result_vector_size);
+        //     for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
+        //         t (i) = apply (e, axis, i);
+        //     }
+        //     return t;
+        // }
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) {
+            typedef typename E::size_type matrix_size_type;
+            matrix_size_type size1 (e ().size1 ());
+            matrix_size_type size2 (e ().size2 ());
+
+            boost::unordered_map<result_type, matrix_size_type> count_map;
+            typename boost::unordered_map<result_type, matrix_size_type>::iterator p;
+            
+            if (axis == 0){
+                for (matrix_size_type i = 0; i < size1; ++ i) {
+                    p = count_map.find (e () (i, index));
+                    if (p != count_map.end ())
+                        p->second += matrix_size_type(1);
+                    else
+                        count_map.emplace (e () (i, index), matrix_size_type (1));
+                }
+
+            }
+            else if (axis == 1){
+                for (matrix_size_type i = 0; i < size2; ++ i) {
+                    p = count_map.find (e () (index, i));
+                    if (p != count_map.end ())
+                        p->second += matrix_size_type(1);
+                    else
+                        count_map.emplace (e () (index, i), matrix_size_type (1));
+                }
+            }
+
+            result_type mode = result_type (0);
+            matrix_size_type mode_val = matrix_size_type(0);
+            p = count_map.begin();
+            while (p != count_map.end()) {
+                if (p->second > mode_val) {
+                    mode = p->first;
+                    mode_val = p->second;
+                }
+                else if (p->second == mode_val && p->first < mode)
+                    mode = p->first;
+                ++ p;
+            }
+            
+            return mode;
         }
 
         // Dense case

@@ -5654,6 +5654,14 @@ namespace boost { namespace numeric { namespace ublas {
 
     template<class E>
     BOOST_UBLAS_INLINE
+    typename matrix_scalar_unary_traits<E, matrix_mode<E> >::result_type
+    mode (const matrix_expression<E> &e) {
+        typedef typename matrix_scalar_unary_traits<E, matrix_mode<E> >::expression_type expression_type;
+        return expression_type (e ());
+    }
+
+    template<class E>
+    BOOST_UBLAS_INLINE
     typename matrix_scalar_unary_traits<E, matrix_norm_1<E> >::result_type
     norm_1 (const matrix_expression<E> &e) {
         typedef typename matrix_scalar_unary_traits<E, matrix_norm_1<E> >::expression_type expression_type;
@@ -6046,6 +6054,14 @@ namespace boost { namespace numeric { namespace ublas {
     typename matrix_vector_unary_traits<E, matrix_variance_axis<E, double> >::result_type
     variance (const matrix_expression<E> &e, typename E::size_type axis) {
         typedef typename matrix_vector_unary_traits<E, matrix_variance_axis<E, double> >::expression_type expression_type;
+        return expression_type (e (), axis);
+    }
+
+    template<class E>
+    BOOST_UBLAS_INLINE
+    typename matrix_vector_unary_traits<E, matrix_mode_axis<E, double> >::result_type
+    mode (const matrix_expression<E> &e, typename E::size_type axis) {
+        typedef typename matrix_vector_unary_traits<E, matrix_mode_axis<E, double> >::expression_type expression_type;
         return expression_type (e (), axis);
     }
 

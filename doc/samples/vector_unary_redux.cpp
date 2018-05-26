@@ -14,10 +14,11 @@
 
 int main () {
     using namespace boost::numeric::ublas;
-    vector<int> v (3);
+    vector<int> v (10);
     for (unsigned i = 0; i < v.size (); ++ i)
         v (i) = i;
-    // v (0) = 1;
+    v (0) = 1;
+    v (9) = 1;
 
     // std::cout << min (v) << std::endl;
     // std::cout << max (v) << std::endl;
@@ -26,7 +27,7 @@ int main () {
     std::cout << mean (v) << std::endl;
     // std::cout << mean_iterative (v) << std::endl;
     // std::cout << median (v) << std::endl;
-    // std::cout << mode (v) << std::endl;
+    std::cout << mode (v) << std::endl;
     std::cout << variance (v) << std::endl;
     std::cout << variance_iterative (v) << std::endl;
     std::cout << norm_1 (v) << std::endl;

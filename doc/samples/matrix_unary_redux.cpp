@@ -57,19 +57,20 @@ int main () {
     //     std::cout << prod (m, x) (i) << std::endl;
     // }
     
-    vector<double> p = mean (m, 0);
-    std::cout << p << std::endl;
+    // vector<double> p = mean (m, 0);
+    // std::cout << p << std::endl;
     // for (unsigned i = 0; i < 3; ++ i) {
     //     std::cout << mean (m, 1) (i) << std::endl;
     // }
     
     // std::cout << variance (m) << std::endl;
-    for (unsigned i = 0; i < 3; ++ i) {
-        std::cout << variance (m, 0) (i) << std::endl;
-    }
+    // for (unsigned i = 0; i < 3; ++ i) {
+    //     std::cout << variance (m, 0) (i) << std::endl;
+    // }
 
     // std::cout << median (m) << std::endl;
-    // std::cout << mode (m) << std::endl;
+    std::cout << mode (m) << std::endl;
+    std::cout << mode (m, 0) << std::endl;
     
     // std::cout << variance_iterative (m) << std::endl;
     std::cout << norm_1 (m) << std::endl;
