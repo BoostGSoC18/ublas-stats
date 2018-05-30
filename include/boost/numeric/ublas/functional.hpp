@@ -349,7 +349,7 @@ namespace boost { namespace numeric { namespace ublas {
             vector_size_type size (e ().size ());
             result_type min_val = result_type (e () (vector_size_type (0)));
             for (vector_size_type i = 0; i < size; ++ i)
-                if (min_val > e () (i))
+                if ( type_traits<value_type>::type_abs(min_val) > type_traits<value_type>::type_abs(e () (i)) )
                     min_val = e () (i);
             return min_val;
         }
@@ -359,7 +359,7 @@ namespace boost { namespace numeric { namespace ublas {
         result_type apply (D size, I it) { 
             result_type min_val = *it;
             while (-- size >= 0) {
-                if (min_val > *it)
+                if ( type_traits<value_type>::type_abs(min_val) > type_traits<value_type>::type_abs(*it) )
                     min_val = *it;
                 ++ it;
             }
@@ -373,7 +373,7 @@ namespace boost { namespace numeric { namespace ublas {
             typedef typename I::difference_type vector_difference_type;
             vector_difference_type size (0);
             while (it != it_end) {
-                if (min_val > *it)
+                if ( type_traits<value_type>::type_abs(min_val) > type_traits<value_type>::type_abs(*it) )
                     min_val = *it;
                 ++ it;
                 ++ size;
@@ -395,7 +395,7 @@ namespace boost { namespace numeric { namespace ublas {
             vector_size_type size (e ().size ());
             result_type max_val = result_type (e () (vector_size_type (0)));
             for (vector_size_type i = 0; i < size; ++ i)
-                if (max_val < e () (i))
+                if ( type_traits<value_type>::type_abs(max_val) < type_traits<value_type>::type_abs(e () (i)) )
                     max_val = e () (i);
             return max_val;
         }
@@ -405,7 +405,7 @@ namespace boost { namespace numeric { namespace ublas {
         result_type apply (D size, I it) { 
             result_type max_val = *it;
             while (-- size >= 0) {
-                if (max_val < *it)
+                if ( type_traits<value_type>::type_abs(max_val) < type_traits<value_type>::type_abs(*it) )
                     max_val = *it;
                 ++ it;
             }
@@ -419,7 +419,7 @@ namespace boost { namespace numeric { namespace ublas {
             typedef typename I::difference_type vector_difference_type;
             vector_difference_type size (0);
             while (it != it_end) {
-                if (max_val < *it)
+                if ( type_traits<value_type>::type_abs(max_val) < type_traits<value_type>::type_abs(*it) )
                     max_val = *it;
                 ++ it;
                 ++ size;
@@ -472,13 +472,14 @@ namespace boost { namespace numeric { namespace ublas {
     struct vector_mean: 
         public vector_scalar_unary_functor<V> {
         typedef typename vector_scalar_unary_functor<V>::value_type value_type;
-        // typedef typename vector_scalar_unary_functor<V>::result_type result_type;
-        typedef double result_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        // typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
         result_type apply (const vector_expression<E> &e) { 
             result_type t = result_type (0);
+            // std::cout << t << std::endl;
             typedef typename E::size_type vector_size_type;
             vector_size_type size (e ().size ());
             for (vector_size_type i = 0; i < size; ++ i)
@@ -516,8 +517,8 @@ namespace boost { namespace numeric { namespace ublas {
     struct vector_mean_iterative: 
         public vector_scalar_unary_functor<V> {
         typedef typename vector_scalar_unary_functor<V>::value_type value_type;
-        // typedef typename vector_scalar_unary_functor<V>::result_type result_type;
-        typedef double result_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        // typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
@@ -561,8 +562,8 @@ namespace boost { namespace numeric { namespace ublas {
     struct vector_variance: 
         public vector_scalar_unary_functor<V> {
         typedef typename vector_scalar_unary_functor<V>::value_type value_type;
-        // typedef typename vector_scalar_unary_functor<V>::result_type result_type;
-        typedef double result_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        // typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
@@ -613,8 +614,8 @@ namespace boost { namespace numeric { namespace ublas {
     struct vector_variance_iterative: 
         public vector_scalar_unary_functor<V> {
         typedef typename vector_scalar_unary_functor<V>::value_type value_type;
-        // typedef typename vector_scalar_unary_functor<V>::result_type result_type;
-        typedef double result_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        // typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
@@ -697,7 +698,7 @@ namespace boost { namespace numeric { namespace ublas {
                     mode = p->first;
                     mode_val = p->second;
                 }
-                else if (p->second == mode_val && p->first < mode)
+                else if (p->second == mode_val && type_traits<value_type>::type_abs(p->first) < type_traits<value_type>::type_abs(mode))
                     mode = p->first;
                 ++ p;
             }
@@ -729,7 +730,7 @@ namespace boost { namespace numeric { namespace ublas {
                     mode = p->first;
                     mode_val = p->second;
                 }
-                else if (p->second == mode_val && p->first < mode)
+                else if (p->second == mode_val && type_traits<value_type>::type_abs(p->first) < type_traits<value_type>::type_abs(mode))
                     mode = p->first;
                 ++ p;
             }
@@ -764,7 +765,7 @@ namespace boost { namespace numeric { namespace ublas {
                     mode = p->first;
                     mode_val = p->second;
                 }
-                else if (p->second == mode_val && p->first < mode)
+                else if (p->second == mode_val && type_traits<value_type>::type_abs(p->first) < type_traits<value_type>::type_abs(mode))
                     mode = p->first;
                 ++ p;
             }
@@ -1438,7 +1439,7 @@ namespace boost { namespace numeric { namespace ublas {
             result_type min_val = result_type ( e () (matrix_size_type (0), matrix_size_type (0)));
             for (matrix_size_type i = 0; i < size1; ++ i)
                 for (matrix_size_type j = 0; j < size2; ++ j)
-                    if (min_val > e () (i, j))
+                    if ( type_traits<value_type>::type_abs(min_val) > type_traits<value_type>::type_abs(e () (i, j)) )
                         min_val = e () (i, j);
             return min_val;
         }
@@ -1448,7 +1449,7 @@ namespace boost { namespace numeric { namespace ublas {
         result_type apply (D size, I it) { 
             result_type min_val = *it;
             while (-- size >= 0) {
-                if (min_val > *it)
+                if ( type_traits<value_type>::type_abs(min_val) > type_traits<value_type>::type_abs(*it) )
                     min_val = *it;
                 ++ it;
             }
@@ -1462,7 +1463,7 @@ namespace boost { namespace numeric { namespace ublas {
             typedef typename I::difference_type matrix_difference_type;
             matrix_difference_type size (0);
             while (it != it_end) {
-                if (min_val > *it)
+                if ( type_traits<value_type>::type_abs(min_val) > type_traits<value_type>::type_abs(*it) )
                     min_val = *it;
                 ++ it;
                 ++ size;
@@ -1486,7 +1487,7 @@ namespace boost { namespace numeric { namespace ublas {
             result_type max_val = result_type ( e () (matrix_size_type (0), matrix_size_type (0)));
             for (matrix_size_type i = 0; i < size1; ++ i)
                 for (matrix_size_type j = 0; j < size2; ++ j)
-                    if (max_val < e () (i, j))
+                    if ( type_traits<value_type>::type_abs(max_val) < type_traits<value_type>::type_abs(e () (i, j)) )
                         max_val = e () (i, j);
             return max_val;
         }
@@ -1496,7 +1497,7 @@ namespace boost { namespace numeric { namespace ublas {
         result_type apply (D size, I it) { 
             result_type max_val = *it;
             while (-- size >= 0) {
-                if (max_val < *it)
+                if ( type_traits<value_type>::type_abs(max_val) < type_traits<value_type>::type_abs(*it) )
                     max_val = *it;
                 ++ it;
             }
@@ -1510,7 +1511,7 @@ namespace boost { namespace numeric { namespace ublas {
             typedef typename I::difference_type matrix_difference_type;
             matrix_difference_type size (0);
             while (it != it_end) {
-                if (max_val < *it)
+                if ( type_traits<value_type>::type_abs(max_val) < type_traits<value_type>::type_abs(*it) )
                     max_val = *it;
                 ++ it;
                 ++ size;
@@ -1523,8 +1524,8 @@ namespace boost { namespace numeric { namespace ublas {
     struct matrix_sum:
         public matrix_scalar_unary_functor<M> {
         typedef typename matrix_scalar_unary_functor<M>::value_type value_type;
-        // typedef typename matrix_scalar_unary_functor<M>::result_type result_type;
-        typedef double result_type;
+        typedef typename matrix_scalar_unary_functor<M>::result_type result_type;
+        // typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
@@ -1571,8 +1572,8 @@ namespace boost { namespace numeric { namespace ublas {
     struct matrix_mean:
         public matrix_scalar_unary_functor<M> {
         typedef typename matrix_scalar_unary_functor<M>::value_type value_type;
-        // typedef typename matrix_scalar_unary_functor<M>::result_type result_type;
-        typedef double result_type;
+        typedef typename matrix_scalar_unary_functor<M>::result_type result_type;
+        // typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
@@ -1616,62 +1617,11 @@ namespace boost { namespace numeric { namespace ublas {
     };
 
     template<class M>
-    struct matrix_mean_iterative: 
-        public matrix_scalar_unary_functor<M> {
-        typedef typename matrix_scalar_unary_functor<M>::value_type value_type;
-        // typedef typename matrix_scalar_unary_functor<M>::result_type result_type;
-        typedef double result_type;
-
-        template<class E>
-        static BOOST_UBLAS_INLINE
-        result_type apply (const matrix_expression<E> &e) { 
-            result_type t = result_type (0);
-            typedef typename E::size_type matrix_size_type;
-            matrix_size_type size1 (e ().size1 ());
-            matrix_size_type size2 (e ().size2 ());
-            matrix_size_type num_elements (0);
-            for (matrix_size_type i = 0; i < size1; ++ i) {
-                for (matrix_size_type j = 0; j < size2; ++ j) {
-                    num_elements++;
-                    t += (e () (i, j) - t) / num_elements;
-                }
-            }
-            return t;
-        }
-        // Dense case
-        template<class D, class I>
-        static BOOST_UBLAS_INLINE
-        result_type apply (D size, I it) { 
-            result_type t = result_type (0);
-            D i (0);
-            while (++ i <= size) {
-                t += (*it - t) / i;
-                ++ it;
-            }
-            return t;
-        }
-        // Sparse case
-        template<class I>
-        static BOOST_UBLAS_INLINE
-        result_type apply (I it, const I &it_end) {
-            result_type t = result_type (0);
-            typedef typename I::difference_type matrix_difference_type;
-            matrix_difference_type size (1);
-            while (it != it_end) {
-                t += (*it - t) / size;
-                ++ it;
-                ++ size;
-            }
-            return t;
-        }
-    };
-
-    template<class M>
     struct matrix_variance:
         public matrix_scalar_unary_functor<M> {
         typedef typename matrix_scalar_unary_functor<M>::value_type value_type;
-        // typedef typename matrix_scalar_unary_functor<M>::result_type result_type;
-        typedef double result_type;
+        typedef typename matrix_scalar_unary_functor<M>::result_type result_type;
+        // typedef double result_type;
 
         template<class E>
         static BOOST_UBLAS_INLINE
@@ -1754,7 +1704,7 @@ namespace boost { namespace numeric { namespace ublas {
                     mode = p->first;
                     mode_val = p->second;
                 }
-                else if (p->second == mode_val && p->first < mode)
+                else if (p->second == mode_val && type_traits<value_type>::type_abs(p->first) < type_traits<value_type>::type_abs(mode))
                     mode = p->first;
                 ++ p;
             }
@@ -1786,7 +1736,7 @@ namespace boost { namespace numeric { namespace ublas {
                     mode = p->first;
                     mode_val = p->second;
                 }
-                else if (p->second == mode_val && p->first < mode)
+                else if (p->second == mode_val && type_traits<value_type>::type_abs(p->first) < type_traits<value_type>::type_abs(mode))
                     mode = p->first;
                 ++ p;
             }
@@ -1821,7 +1771,7 @@ namespace boost { namespace numeric { namespace ublas {
                     mode = p->first;
                     mode_val = p->second;
                 }
-                else if (p->second == mode_val && p->first < mode)
+                else if (p->second == mode_val && type_traits<value_type>::type_abs(p->first) < type_traits<value_type>::type_abs(mode))
                     mode = p->first;
                 ++ p;
             }
@@ -1876,44 +1826,85 @@ namespace boost { namespace numeric { namespace ublas {
             if (axis == 0){
                 vmin = result_type(e () (0, index));
                 for (matrix_size_type i = 0; i < size1; ++ i)
-                    if (vmin > e () (i, index))
+                    if ( type_traits<value_type>::type_abs(vmin) > type_traits<value_type>::type_abs(e () (i, index)) )
                         vmin = e () (i, index);
                 return vmin;
             }
             else if (axis == 1){
                 vmin = result_type(e () (index, 0));
                 for (matrix_size_type i = 0; i < size2; ++ i)
-                    if (vmin > e () (index, i))
+                    if ( type_traits<value_type>::type_abs(vmin) > type_traits<value_type>::type_abs(e () (index, i)) )
                         vmin = e () (index, i);
                 return vmin;
             }
         }
 
         // Dense case
-        // template<class D, class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (D size, I it) { 
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) {
+            result_type vmin = *it;
+            while (-- size >= 0) {
+                if ( type_traits<value_type>::type_abs(vmin) > type_traits<value_type>::type_abs(*it) )
+                    vmin = *it;
+                ++ it;
+            }
+            return vmin;
+        }
+
+        // Packed case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            result_type vmin = *it;
+            while (it != it_end){
+                if ( type_traits<value_type>::type_abs(vmin) > type_traits<value_type>::type_abs(*it) )
+                    vmin = *it;
+                ++ it;
+            }
+            return vmin;
+        }
+
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end, sparse_bidirectional_iterator_tag) {
+            result_type vmin = *it;
+            while (it != it_end){
+                if ( type_traits<value_type>::type_abs(vmin) > type_traits<value_type>::type_abs(*it) )
+                    vmin = *it;
+                ++ it;
+            }
+            return vmin;
         //     result_type t = result_type (0);
-        //     while (-- size >= 0) {
-        //         t += *it;
-        //         ++ it;
+        //     if (it1 != it1_end && it2 != it2_end) {
+        //         size_type it1_index = it1.index2 (), it2_index = it2.index ();
+        //         for (;;) {
+        //             difference_type compare = it1_index - it2_index;
+        //             if (compare == 0) {
+        //                 t += *it1 * *it2, ++ it1, ++ it2;
+        //                 if (it1 != it1_end && it2 != it2_end) {
+        //                     it1_index = it1.index2 ();
+        //                     it2_index = it2.index ();
+        //                 } else
+        //                     break;
+        //             } else if (compare < 0) {
+        //                 increment (it1, it1_end, - compare);
+        //                 if (it1 != it1_end)
+        //                     it1_index = it1.index2 ();
+        //                 else
+        //                     break;
+        //             } else if (compare > 0) {
+        //                 increment (it2, it2_end, compare);
+        //                 if (it2 != it2_end)
+        //                     it2_index = it2.index ();
+        //                 else
+        //                     break;
+        //             }
+        //         }
         //     }
-        //     return t / size; 
-        // }
-        // // Sparse case
-        // template<class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (I it, const I &it_end) {
-        //     result_type t = result_type (0);
-        //     typedef typename I::difference_type matrix_difference_type;
-        //     matrix_difference_type size (0);
-        //     while (it != it_end) {
-        //         t += *it;
-        //         ++ it;
-        //         ++ size;
-        //     }
-        //     return t / size;
-        // }
+        //     return t;
+        }
     };
 
     template<class M, class TV>
@@ -1954,44 +1945,85 @@ namespace boost { namespace numeric { namespace ublas {
             if (axis == 0){
                 vmax = result_type(e () (0, index));
                 for (matrix_size_type i = 0; i < size1; ++ i)
-                    if (vmax < e () (i, index))
+                    if ( type_traits<value_type>::type_abs(vmax) < type_traits<value_type>::type_abs(e () (i, index)) )
                         vmax = e () (i, index);
                 return vmax;
             }
             else if (axis == 1){
                 vmax = result_type(e () (index, 0));
                 for (matrix_size_type i = 0; i < size2; ++ i)
-                    if (vmax < e () (index, i))
+                    if ( type_traits<value_type>::type_abs(vmax) < type_traits<value_type>::type_abs(e () (index, i)) )
                         vmax = e () (index, i);
                 return vmax;
             }
         }
 
         // Dense case
-        // template<class D, class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (D size, I it) { 
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) {
+            result_type vmax = *it;
+            while (-- size >= 0) {
+                if ( type_traits<value_type>::type_abs(vmax) < type_traits<value_type>::type_abs(*it) )
+                    vmax = *it;
+                ++ it;
+            }
+            return vmax;
+        }
+
+        // Packed case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            result_type vmax = *it;
+            while (it != it_end){
+                if ( type_traits<value_type>::type_abs(vmax) < type_traits<value_type>::type_abs(*it) )
+                    vmax = *it;
+                ++ it;
+            }
+            return vmax;
+        }
+
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end, sparse_bidirectional_iterator_tag) {
+            result_type vmax = *it;
+            while (it != it_end){
+                if ( type_traits<value_type>::type_abs(vmax) < type_traits<value_type>::type_abs(*it) )
+                    vmax = *it;
+                ++ it;
+            }
+            return vmax;
         //     result_type t = result_type (0);
-        //     while (-- size >= 0) {
-        //         t += *it;
-        //         ++ it;
+        //     if (it1 != it1_end && it2 != it2_end) {
+        //         size_type it1_index = it1.index2 (), it2_index = it2.index ();
+        //         for (;;) {
+        //             difference_type compare = it1_index - it2_index;
+        //             if (compare == 0) {
+        //                 t += *it1 * *it2, ++ it1, ++ it2;
+        //                 if (it1 != it1_end && it2 != it2_end) {
+        //                     it1_index = it1.index2 ();
+        //                     it2_index = it2.index ();
+        //                 } else
+        //                     break;
+        //             } else if (compare < 0) {
+        //                 increment (it1, it1_end, - compare);
+        //                 if (it1 != it1_end)
+        //                     it1_index = it1.index2 ();
+        //                 else
+        //                     break;
+        //             } else if (compare > 0) {
+        //                 increment (it2, it2_end, compare);
+        //                 if (it2 != it2_end)
+        //                     it2_index = it2.index ();
+        //                 else
+        //                     break;
+        //             }
+        //         }
         //     }
-        //     return t / size; 
-        // }
-        // // Sparse case
-        // template<class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (I it, const I &it_end) {
-        //     result_type t = result_type (0);
-        //     typedef typename I::difference_type matrix_difference_type;
-        //     matrix_difference_type size (0);
-        //     while (it != it_end) {
-        //         t += *it;
-        //         ++ it;
-        //         ++ size;
-        //     }
-        //     return t / size;
-        // }
+        //     return t;
+        }
     };
 
     template<class M, class TV>
@@ -2045,30 +2077,69 @@ namespace boost { namespace numeric { namespace ublas {
         }
 
         // Dense case
-        // template<class D, class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (D size, I it) { 
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) {
+            result_type t = result_type (0);
+            while (-- size >= 0) {
+                t += *it;
+                ++ it;
+            }
+            return t;
+        }
+
+        // Packed case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            result_type t = result_type (0);
+            while (it != it_end){
+                t += *it;
+                ++ it;
+            }
+            return t;
+        }
+
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end, sparse_bidirectional_iterator_tag) {
+            result_type t = result_type (0);
+            while (it != it_end){
+                t += *it;
+                ++ it;
+            }
+            return t;
         //     result_type t = result_type (0);
-        //     while (-- size >= 0) {
-        //         t += *it;
-        //         ++ it;
+        //     if (it1 != it1_end && it2 != it2_end) {
+        //         size_type it1_index = it1.index2 (), it2_index = it2.index ();
+        //         for (;;) {
+        //             difference_type compare = it1_index - it2_index;
+        //             if (compare == 0) {
+        //                 t += *it1 * *it2, ++ it1, ++ it2;
+        //                 if (it1 != it1_end && it2 != it2_end) {
+        //                     it1_index = it1.index2 ();
+        //                     it2_index = it2.index ();
+        //                 } else
+        //                     break;
+        //             } else if (compare < 0) {
+        //                 increment (it1, it1_end, - compare);
+        //                 if (it1 != it1_end)
+        //                     it1_index = it1.index2 ();
+        //                 else
+        //                     break;
+        //             } else if (compare > 0) {
+        //                 increment (it2, it2_end, compare);
+        //                 if (it2 != it2_end)
+        //                     it2_index = it2.index ();
+        //                 else
+        //                     break;
+        //             }
+        //         }
         //     }
-        //     return t / size; 
-        // }
-        // // Sparse case
-        // template<class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (I it, const I &it_end) {
-        //     result_type t = result_type (0);
-        //     typedef typename I::difference_type matrix_difference_type;
-        //     matrix_difference_type size (0);
-        //     while (it != it_end) {
-        //         t += *it;
-        //         ++ it;
-        //         ++ size;
-        //     }
-        //     return t / size;
-        // }
+        //     return t;
+        }
+
     };
 
     template<class M, class TV>
@@ -2122,30 +2193,74 @@ namespace boost { namespace numeric { namespace ublas {
         }
 
         // Dense case
-        // template<class D, class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (D size, I it) { 
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) {
+            result_type t = result_type (0);
+            while (-- size >= 0) {
+                t += *it;
+                ++ it;
+            }
+            return t / size;
+        }
+
+        // Packed case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            typedef typename I::difference_type matrix_difference_type;
+            matrix_difference_type size (0);
+            result_type t = result_type (0);
+            while (it != it_end){
+                t += *it;
+                ++ it;
+                ++ size;
+            }
+            return t / size;
+        }
+
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end, sparse_bidirectional_iterator_tag) {
+            typedef typename I::difference_type matrix_difference_type;
+            matrix_difference_type size (0);
+            result_type t = result_type (0);
+            while (it != it_end){
+                t += *it;
+                ++ it;
+                ++ size;
+            }
+            return t / size;
         //     result_type t = result_type (0);
-        //     while (-- size >= 0) {
-        //         t += *it;
-        //         ++ it;
+        //     if (it1 != it1_end && it2 != it2_end) {
+        //         size_type it1_index = it1.index2 (), it2_index = it2.index ();
+        //         for (;;) {
+        //             difference_type compare = it1_index - it2_index;
+        //             if (compare == 0) {
+        //                 t += *it1 * *it2, ++ it1, ++ it2;
+        //                 if (it1 != it1_end && it2 != it2_end) {
+        //                     it1_index = it1.index2 ();
+        //                     it2_index = it2.index ();
+        //                 } else
+        //                     break;
+        //             } else if (compare < 0) {
+        //                 increment (it1, it1_end, - compare);
+        //                 if (it1 != it1_end)
+        //                     it1_index = it1.index2 ();
+        //                 else
+        //                     break;
+        //             } else if (compare > 0) {
+        //                 increment (it2, it2_end, compare);
+        //                 if (it2 != it2_end)
+        //                     it2_index = it2.index ();
+        //                 else
+        //                     break;
+        //             }
+        //         }
         //     }
-        //     return t / size; 
-        // }
-        // // Sparse case
-        // template<class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (I it, const I &it_end) {
-        //     result_type t = result_type (0);
-        //     typedef typename I::difference_type matrix_difference_type;
-        //     matrix_difference_type size (0);
-        //     while (it != it_end) {
-        //         t += *it;
-        //         ++ it;
-        //         ++ size;
-        //     }
-        //     return t / size;
-        // }
+        //     return t;
+        }
     };
 
     template<class M, class TV>
@@ -2202,30 +2317,80 @@ namespace boost { namespace numeric { namespace ublas {
         }
 
         // Dense case
-        // template<class D, class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (D size, I it) { 
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) {
+            result_type sumsq = result_type (0);
+            result_type sum = result_type (0);
+            while (-- size >= 0) {
+                sumsq += *it * *it;
+                sum += *it;
+                ++ it;
+            }
+            return (sumsq - (sum * sum) / size) / size;
+        }
+
+        // Packed case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            typedef typename I::difference_type matrix_difference_type;
+            matrix_difference_type size (0);
+            result_type sumsq = result_type (0);
+            result_type sum = result_type (0);
+            while (it != it_end){
+                sumsq += *it * *it;
+                sum += *it;
+                ++ it;
+                ++ size;
+            }
+            return (sumsq - (sum * sum) / size) / size;
+        }
+
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end, sparse_bidirectional_iterator_tag) {
+            typedef typename I::difference_type matrix_difference_type;
+            matrix_difference_type size (0);
+            result_type sumsq = result_type (0);
+            result_type sum = result_type (0);
+            while (it != it_end){
+                sumsq += *it * *it;
+                sum += *it;
+                ++ it;
+                ++ size;
+            }
+            return (sumsq - (sum * sum) / size) / size;
         //     result_type t = result_type (0);
-        //     while (-- size >= 0) {
-        //         t += *it;
-        //         ++ it;
+        //     if (it1 != it1_end && it2 != it2_end) {
+        //         size_type it1_index = it1.index2 (), it2_index = it2.index ();
+        //         for (;;) {
+        //             difference_type compare = it1_index - it2_index;
+        //             if (compare == 0) {
+        //                 t += *it1 * *it2, ++ it1, ++ it2;
+        //                 if (it1 != it1_end && it2 != it2_end) {
+        //                     it1_index = it1.index2 ();
+        //                     it2_index = it2.index ();
+        //                 } else
+        //                     break;
+        //             } else if (compare < 0) {
+        //                 increment (it1, it1_end, - compare);
+        //                 if (it1 != it1_end)
+        //                     it1_index = it1.index2 ();
+        //                 else
+        //                     break;
+        //             } else if (compare > 0) {
+        //                 increment (it2, it2_end, compare);
+        //                 if (it2 != it2_end)
+        //                     it2_index = it2.index ();
+        //                 else
+        //                     break;
+        //             }
+        //         }
         //     }
-        //     return t / size; 
-        // }
-        // // Sparse case
-        // template<class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (I it, const I &it_end) {
-        //     result_type t = result_type (0);
-        //     typedef typename I::difference_type matrix_difference_type;
-        //     matrix_difference_type size (0);
-        //     while (it != it_end) {
-        //         t += *it;
-        //         ++ it;
-        //         ++ size;
-        //     }
-        //     return t / size;
-        // }
+        //     return t;
+        }
     };
 
     template<class M, class TV>
@@ -2268,7 +2433,7 @@ namespace boost { namespace numeric { namespace ublas {
                 for (matrix_size_type i = 0; i < size1; ++ i) {
                     p = count_map.find (e () (i, index));
                     if (p != count_map.end ())
-                        p->second += matrix_size_type(1);
+                        p->second += matrix_size_type (1);
                     else
                         count_map.emplace (e () (i, index), matrix_size_type (1));
                 }
@@ -2278,21 +2443,21 @@ namespace boost { namespace numeric { namespace ublas {
                 for (matrix_size_type i = 0; i < size2; ++ i) {
                     p = count_map.find (e () (index, i));
                     if (p != count_map.end ())
-                        p->second += matrix_size_type(1);
+                        p->second += matrix_size_type (1);
                     else
                         count_map.emplace (e () (index, i), matrix_size_type (1));
                 }
             }
 
             result_type mode = result_type (0);
-            matrix_size_type mode_val = matrix_size_type(0);
+            matrix_size_type mode_val = matrix_size_type (0);
             p = count_map.begin();
-            while (p != count_map.end()) {
+            while (p != count_map.end ()) {
                 if (p->second > mode_val) {
                     mode = p->first;
                     mode_val = p->second;
                 }
-                else if (p->second == mode_val && p->first < mode)
+                else if (p->second == mode_val && type_traits<value_type>::type_abs (p->first) < type_traits<value_type>::type_abs (mode))
                     mode = p->first;
                 ++ p;
             }
@@ -2301,30 +2466,132 @@ namespace boost { namespace numeric { namespace ublas {
         }
 
         // Dense case
-        // template<class D, class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (D size, I it) { 
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) {
+            boost::unordered_map<result_type, D> count_map;
+            typename boost::unordered_map<result_type, D>::iterator p;
+            
+            while (-- size >= 0) {
+                p = count_map.find (*it);
+                if (p != count_map.end ())
+                    p->second += D (1);
+                else
+                    count_map.emplace (*it, D (1));
+                ++ it;
+            }
+
+            result_type mode = result_type (0);
+            D mode_val = D (0);
+            p = count_map.begin();
+            while (p != count_map.end ()) {
+                if (p->second > mode_val) {
+                    mode = p->first;
+                    mode_val = p->second;
+                }
+                else if (p->second == mode_val && type_traits<value_type>::type_abs (p->first) < type_traits<value_type>::type_abs (mode))
+                    mode = p->first;
+                ++ p;
+            }
+            
+            return mode;
+        }
+
+        // Packed case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            typedef typename I::difference_type matrix_difference_type;
+            
+            boost::unordered_map<result_type, matrix_difference_type> count_map;
+            typename boost::unordered_map<result_type, matrix_difference_type>::iterator p;
+            
+            while (it != it_end){
+                p = count_map.find (*it);
+                if (p != count_map.end ())
+                    p->second += matrix_difference_type (1);
+                else
+                    count_map.emplace (*it, matrix_difference_type (1));
+                ++ it;
+            }
+
+            result_type mode = result_type (0);
+            matrix_difference_type mode_val = matrix_difference_type (0);
+            p = count_map.begin();
+            while (p != count_map.end ()) {
+                if (p->second > mode_val) {
+                    mode = p->first;
+                    mode_val = p->second;
+                }
+                else if (p->second == mode_val && type_traits<value_type>::type_abs (p->first) < type_traits<value_type>::type_abs (mode))
+                    mode = p->first;
+                ++ p;
+            }
+
+            return mode;
+        }
+
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end, sparse_bidirectional_iterator_tag) {
+            typedef typename I::difference_type matrix_difference_type;
+            
+            boost::unordered_map<result_type, matrix_difference_type> count_map;
+            typename boost::unordered_map<result_type, matrix_difference_type>::iterator p;
+            
+            while (it != it_end){
+                p = count_map.find (*it);
+                if (p != count_map.end ())
+                    p->second += matrix_difference_type (1);
+                else
+                    count_map.emplace (*it, matrix_difference_type (1));
+                ++ it;
+            }
+
+            result_type mode = result_type (0);
+            matrix_difference_type mode_val = matrix_difference_type (0);
+            p = count_map.begin();
+            while (p != count_map.end ()) {
+                if (p->second > mode_val) {
+                    mode = p->first;
+                    mode_val = p->second;
+                }
+                else if (p->second == mode_val && type_traits<value_type>::type_abs (p->first) < type_traits<value_type>::type_abs (mode))
+                    mode = p->first;
+                ++ p;
+            }
+
+            return mode;
         //     result_type t = result_type (0);
-        //     while (-- size >= 0) {
-        //         t += *it;
-        //         ++ it;
+        //     if (it1 != it1_end && it2 != it2_end) {
+        //         size_type it1_index = it1.index2 (), it2_index = it2.index ();
+        //         for (;;) {
+        //             difference_type compare = it1_index - it2_index;
+        //             if (compare == 0) {
+        //                 t += *it1 * *it2, ++ it1, ++ it2;
+        //                 if (it1 != it1_end && it2 != it2_end) {
+        //                     it1_index = it1.index2 ();
+        //                     it2_index = it2.index ();
+        //                 } else
+        //                     break;
+        //             } else if (compare < 0) {
+        //                 increment (it1, it1_end, - compare);
+        //                 if (it1 != it1_end)
+        //                     it1_index = it1.index2 ();
+        //                 else
+        //                     break;
+        //             } else if (compare > 0) {
+        //                 increment (it2, it2_end, compare);
+        //                 if (it2 != it2_end)
+        //                     it2_index = it2.index ();
+        //                 else
+        //                     break;
+        //             }
+        //         }
         //     }
-        //     return t / size; 
-        // }
-        // // Sparse case
-        // template<class I>
-        // static BOOST_UBLAS_INLINE
-        // result_type apply (I it, const I &it_end) {
-        //     result_type t = result_type (0);
-        //     typedef typename I::difference_type matrix_difference_type;
-        //     matrix_difference_type size (0);
-        //     while (it != it_end) {
-        //         t += *it;
-        //         ++ it;
-        //         ++ size;
-        //     }
-        //     return t / size;
-        // }
+        //     return t;
+        }
     };
 
     // Binary returning vector

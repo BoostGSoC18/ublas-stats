@@ -1,0 +1,47 @@
+--- Test Suite: Test storage layout of banded matrix type ---
+[Info>> Example data taken from http://www.netlib.org/lapack/lug/node124.html
+[Info>> Test case: storage layout banded_matrix < column_major >
+[Info>> Full matrix
+[Info>> [5,5]((11,12,0,0,0),(21,22,23,0,0),(31,32,33,34,0),(0,42,43,44,45),(0,0,53,54,55))
+[Info>> data() of matrix
+0 11 21 31 12 22 32 42 23 33 43 53 34 44 54 0 45 55 0 0 
+[Info>> Expected data() of matrix
+0 11 21 31 12 22 32 42 23 33 43 53 34 44 54 0 45 55 0 0 
+[Info>> Test case: storage layout banded_matrix < row_major >
+[Info>> Full matrix
+[Info>> [5,5]((11,12,0,0,0),(21,22,23,0,0),(31,32,33,34,0),(0,42,43,44,45),(0,0,53,54,55))
+[Info>> data() of matrix
+0 0 11 12 0 21 22 23 31 32 33 34 42 43 44 45 53 54 55 0 
+[Info>> Expected data() of matrix
+0 0 11 12 0 21 22 23 31 32 33 34 42 43 44 45 53 54 55 0 
+[Info>> Test case: storage layout banded_matrix < column_major > 6x5
+[Info>> Full matrix
+[Info>> [6,5]((11,12,0,0,0),(21,22,23,0,0),(31,32,33,34,0),(0,42,43,44,45),(0,0,53,54,55),(0,0,0,64,65))
+[Info>> data() of matrix
+0 11 21 31 12 22 32 42 23 33 43 53 34 44 54 64 45 55 65 0 
+[Info>> Expected data() of matrix
+0 11 21 31 12 22 32 42 23 33 43 53 34 44 54 64 45 55 65 0 
+[Info>> Test case: storage layout banded_matrix < row_major > 6x5
+[Info>> Full matrix
+[Info>> [6,5]((11,12,0,0,0),(21,22,23,0,0),(31,32,33,34,0),(0,42,43,44,45),(0,0,53,54,55),(0,0,0,64,65))
+[Info>> data() of matrix
+0 0 11 12 0 21 22 23 31 32 33 34 42 43 44 45 53 54 55 0 64 65 0 0 
+[Info>> Expected data() of matrix
+0 0 11 12 0 21 22 23 31 32 33 34 42 43 44 45 53 54 55 0 64 65 0 0 
+[Info>> Test case: storage layout banded_matrix < column_major > 5x6
+[Info>> Full matrix
+[Info>> [5,6]((11,12,0,0,0,0),(21,22,23,0,0,0),(31,32,33,34,0,0),(0,42,43,44,45,0),(0,0,53,54,55,56))
+[Info>> data() of matrix
+0 11 21 31 12 22 32 42 23 33 43 53 34 44 54 0 45 55 0 0 56 0 0 0 
+[Info>> Expected data() of matrix
+0 11 21 31 12 22 32 42 23 33 43 53 34 44 54 0 45 55 0 0 56 0 0 0 
+[Info>> Test case: storage layout banded_matrix < row_major > 5x6
+[Info>> Full matrix
+[Info>> [5,6]((11,12,0,0,0,0),(21,22,23,0,0,0),(31,32,33,34,0,0),(0,42,43,44,45,0),(0,0,53,54,55,56))
+[Info>> data() of matrix
+0 0 11 12 0 21 22 23 31 32 33 34 42 43 44 45 53 54 55 56 
+[Info>> Expected data() of matrix
+0 0 11 12 0 21 22 23 31 32 33 34 42 43 44 45 53 54 55 56 
+No failed test
+
+EXIT STATUS: 0

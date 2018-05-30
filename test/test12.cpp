@@ -42,6 +42,34 @@ struct test_my_matrix_vector {
             std::cout << "prod (m1, v1) = " << v2 << std::endl;
             v2 = ublas::prod (v1, m1);
             std::cout << "prod (v1, m1) = " << v2 << std::endl;
+
+            // Unary matrix operations resulting in a vector
+            initialize_matrix (m1);
+            v1 = ublas::min (m1, 0);
+            std::cout << "min (m1, 0) = " << v1 << std::endl;
+            v1 = ublas::min (m1, 1);
+            std::cout << "min (m1, 1) = " << v1 << std::endl;
+            v1 = ublas::max (m1, 0);
+            std::cout << "max (m1, 0) = " << v1 << std::endl;
+            v1 = ublas::max (m1, 1);
+            std::cout << "max (m1, 1) = " << v1 << std::endl;
+            v1 = ublas::sum (m1, 0);
+            std::cout << "sum (m1, 0) = " << v1 << std::endl;
+            v1 = ublas::sum (m1, 1);
+            std::cout << "sum (m1, 1) = " << v1 << std::endl;
+            v1 = ublas::mean (m1, 0);
+            std::cout << "mean (m1, 0) = " << v1 << std::endl;
+            v1 = ublas::mean (m1, 1);
+            std::cout << "mean (m1, 1) = " << v1 << std::endl;
+            v1 = ublas::variance (m1, 0);
+            std::cout << "variance (m1, 0) = " << v1 << std::endl;
+            v1 = ublas::variance (m1, 1);
+            std::cout << "variance (m1, 1) = " << v1 << std::endl;
+            v1 = ublas::mode (m1, 0);
+            std::cout << "mode (m1, 0) = " << v1 << std::endl;
+            v1 = ublas::mode (m1, 1);
+            std::cout << "mode (m1, 1) = " << v1 << std::endl;
+
         }
     }
     void operator () () const {

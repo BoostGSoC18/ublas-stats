@@ -23,7 +23,17 @@ int main () {
         v (i) = i;
     }
 
-    std::cout << prod (m, v) << std::endl;
-    std::cout << prod (v, m) << std::endl;
+    // vector<double>::iterator it = prod (m, v).find (0);
+    auto it = prod (m, v).find (0);
+    while (it != prod (m, v).end()) {
+        std::cout << *it << std::endl;
+        ++ it;
+        break;
+    }
+
+
+    // std::cout << prod (m, v) << std::endl;
+
+    // std::cout << prod (v, m) << std::endl;
 }
 

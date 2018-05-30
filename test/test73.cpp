@@ -37,6 +37,21 @@ struct test_my_matrix {
             std::cout << "m1.zero_matrix = " << m1 << std::endl;
             m1 = m2;
 
+            // Unary matrix operations resulting in a scalar
+            initialize_matrix (m1);
+            t = ublas::min (m1);
+            std::cout << "min (m1) = " << t << std::endl;
+            t = ublas::max (m1);
+            std::cout << "max (m1) = " << t << std::endl;
+            t = ublas::sum (m1);
+            std::cout << "sum (m1) = " << t << std::endl;
+            t = ublas::mean (m1);
+            std::cout << "mean (m1) = " << t << std::endl;
+            t = ublas::variance (m1);
+            std::cout << "variance (m1) = " << t << std::endl;
+            t = ublas::mode (m1);
+            std::cout << "mode (m1) = " << t << std::endl;
+
             // Unary matrix operations resulting in a matrix
             initialize_matrix (m1);
             m2 = - m1;

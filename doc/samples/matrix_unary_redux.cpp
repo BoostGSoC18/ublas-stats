@@ -26,10 +26,32 @@ int main () {
     m (0, 0) = 3;
     m (1, 2) = 1;
 
-    vector<int> x (3);
-    x (0) = 1;
-    x (1) = 2;
-    x (2) = 3;
+    // auto p = m.find1(0, 0, 0);
+    // while (p != m.end1()) {
+    //     auto q = p.begin();
+    //     while (q != p.end()) {
+    //         std::cout << *q << " ";
+    //         ++ q;
+    //     }
+    //     std::cout << std::endl;
+    //     ++ p;
+    //     break;
+    // }
+
+    // vector<int> x (3);
+    // x (0) = 1;
+    // x (1) = 2;
+    // x (2) = 3;
+
+    // matrix< std::complex<int> > m1 (3, 3);
+    // for (unsigned i = 0; i < m.size1 (); ++ i) {
+    //     for (unsigned j = 0; j < m.size2 (); ++ j) {
+    //         m (i, j) = std::complex<int>(i, j);
+    //     }
+    // }
+
+    // vector< std::complex<int> > v1 = mean (m1, 0);
+
 
     // std::cout << min (m) << std::endl;
     // for (unsigned i = 0; i < 3; ++ i) {
@@ -41,26 +63,30 @@ int main () {
     // }
 
     // std::cout << sum (m) << std::endl;
+    for (auto p : sum (m, 1)) {
+        std::cout << p << std::endl;    
+    }
+    // auto p = sum (m, 1).find (0);
+    // while (p != sum (m, 1).end ()) {
+    //     std::cout << *p << std::endl;
+    //     ++ p;
+    // }
+    std::cout << sum (m, 0) << std::endl;
     // for (unsigned i = 0; i < 3; ++ i) {
     //     std::cout << sum (m, 0) (i) << std::endl;
     // }
 
     // std::cout << mean (m) << std::endl;
     // std::cout << mean_iterative (m) << std::endl;
-
-    // std::cout << prod(m, x) << std::endl;
-    // vector<double> p = prod(m, x);
-    // std::cout << p << std::endl;
-    // p.const_iterator it = p.begin();
-
-    // for (unsigned i = 0; i < 3; ++ i) {
-    //     std::cout << prod (m, x) (i) << std::endl;
-    // }
     
     // vector<double> p = mean (m, 0);
     // std::cout << p << std::endl;
     // for (unsigned i = 0; i < 3; ++ i) {
     //     std::cout << mean (m, 1) (i) << std::endl;
+    // }
+
+    // for (auto &p : mean (m, 1)) {
+    //     std::cout << p << std::endl;
     // }
     
     // std::cout << variance (m) << std::endl;

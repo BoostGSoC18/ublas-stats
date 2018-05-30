@@ -117,17 +117,23 @@ struct test_my_vector {
 
         // Unary vector operations resulting in a scalar
         initialize_vector (v1);
+        t = ublas::min (v1);
+        std::cout << "min (v1) = " << t << std::endl;
+        t = ublas::max (v1);
+        std::cout << "max (v1) = " << t << std::endl;
         t = ublas::sum (v1);
         std::cout << "sum (v1) = " << t << std::endl;
-
         t = ublas::mean (v1);
         std::cout << "mean (v1) = " << t << std::endl;
         t = ublas::mean_iterative (v1);
         std::cout << "mean_iterative (v1) = " << t << std::endl;
-        // t = ublas::variance (v1);
-        // std::cout << "variance (v1) = " << t << std::endl;
-        // t = ublas::variance_iterative (v1);
-        // std::cout << "variance_iterative (v1) = " << t << std::endl;
+        t = ublas::variance (v1);
+        std::cout << "variance (v1) = " << t << std::endl;
+        t = ublas::variance_iterative (v1);
+        std::cout << "variance_iterative (v1) = " << t << std::endl;
+        t = ublas::mode (v1);
+        std::cout << "mode (v1) = " << t << std::endl;
+        
 
         n = ublas::norm_1 (v1);
         std::cout << "norm_1 (v1) = " << n << std::endl;
@@ -144,6 +150,8 @@ struct test_my_vector {
         initialize_vector (v2);
         t = ublas::inner_prod (v1, v2);
         std::cout << "inner_prod (v1, v2) = " << t << std::endl;
+        t = ublas::covariance (v1, v2);
+        std::cout << "covariance (v1, v2) = " << t << std::endl;
 
         // Scalar and Binary vector expression resulting in a vector
         initialize_vector (v1);

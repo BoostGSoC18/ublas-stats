@@ -50,8 +50,9 @@ UBLAS_TESTSET_SPARSE_COO ?=
 project
     : requirements
        <define>BOOST_UBLAS_NO_EXCEPTIONS
+       <define>USE_SCALAR_ET
        <toolset>vacpp:<define>"BOOST_UBLAS_NO_ELEMENT_PROXIES"
-       <toolset>gcc:<cxxflags>"-Wall -pedantic -Wextra"
+       <toolset>gcc:<cxxflags>"-Wall -pedantic -Wextra -isystem ../include/"
        <toolset>msvc:<cxxflags>"/W4" # == all
        #  The define of macros below prevent warnings about the checked versions of SCL and CRT libraries.
        #  Most Boost code does not need these versions (as they are markedly slower).
@@ -197,11 +198,11 @@ test-suite numeric/uBLAS
        : : :
            <define>BOOST_UBLAS_COO_ALWAYS_DO_FULL_SORT
       ]
-      [ run test_triangular.cpp
-       :
-       :
-       : <library>/boost/timer//boost_timer
-      ]
+#      [ run test_triangular.cpp
+#       :
+#       :
+#       : <library>/boost/timer//boost_timer
+#      ]
       [ run test_ticket7296.cpp
         :
         :
