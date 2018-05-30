@@ -17,6 +17,7 @@
 
 #include <boost/core/ignore_unused.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/range/algorithm.hpp>
 
 #include <boost/numeric/ublas/traits.hpp>
 #ifdef BOOST_UBLAS_USE_DUFF_DEVICE
@@ -36,6 +37,8 @@ namespace boost { namespace numeric { namespace ublas { namespace raw {
 #endif
 
 #include <boost/numeric/ublas/detail/definitions.hpp>
+
+#include <boost/numeric/ublas/vector.hpp>
 
 
 
@@ -678,27 +681,27 @@ namespace boost { namespace numeric { namespace ublas {
         static BOOST_UBLAS_INLINE
         result_type apply (const vector_expression<E> &e) {
             typedef typename E::size_type vector_size_type;
-            boost::unordered_map<result_type, vector_size_type> count_map(0);
+            boost::unordered_map<result_type, vector_size_type> count_map (0);
             vector_size_type size (e ().size ());
             typename boost::unordered_map<result_type, vector_size_type>::iterator p;
             // auto p = count_map.iterator;
             for (vector_size_type i = 0; i < size; ++ i) {
                 p = count_map.find (e () (i));
                 if (p != count_map.end ())
-                    p->second += vector_size_type(1);
+                    p->second += vector_size_type (1);
                 else
                     count_map.emplace (e () (i), vector_size_type (1));
             }
             
             result_type mode = result_type (0);
-            vector_size_type mode_val = vector_size_type(0);
-            p = count_map.begin();
-            while (p != count_map.end()) {
+            vector_size_type mode_val = vector_size_type (0);
+            p = count_map.begin ();
+            while (p != count_map.end ()) {
                 if (p->second > mode_val) {
                     mode = p->first;
                     mode_val = p->second;
                 }
-                else if (p->second == mode_val && type_traits<value_type>::type_abs(p->first) < type_traits<value_type>::type_abs(mode))
+                else if (p->second == mode_val && type_traits<value_type>::type_abs (p->first) < type_traits<value_type>::type_abs (mode))
                     mode = p->first;
                 ++ p;
             }
@@ -716,21 +719,21 @@ namespace boost { namespace numeric { namespace ublas {
             while (-- size >= 0) {
                 p = count_map.find (*it);
                 if ( p != count_map.end ())
-                    p->second += D(1);
+                    p->second += D (1);
                 else
                     count_map.emplace (*it, D (1));
                 ++ it;
             }
             
             result_type mode = result_type (0);
-            D mode_val = D(0);
-            p = count_map.begin();
-            while (p != count_map.end()) {
+            D mode_val = D (0);
+            p = count_map.begin ();
+            while (p != count_map.end ()) {
                 if (p->second > mode_val) {
                     mode = p->first;
                     mode_val = p->second;
                 }
-                else if (p->second == mode_val && type_traits<value_type>::type_abs(p->first) < type_traits<value_type>::type_abs(mode))
+                else if (p->second == mode_val && type_traits<value_type>::type_abs (p->first) < type_traits<value_type>::type_abs (mode))
                     mode = p->first;
                 ++ p;
             }
@@ -751,26 +754,98 @@ namespace boost { namespace numeric { namespace ublas {
             while (it != it_end) {
                 p = count_map.find (*it);
                 if ( p != count_map.end ())
-                    p->second += vector_difference_type(1);
+                    p->second += vector_difference_type (1);
                 else
                     count_map.emplace (*it, vector_difference_type (1));
                 ++ it;
             }
             
             result_type mode = result_type (0);
-            vector_difference_type mode_val = vector_difference_type(0);
+            vector_difference_type mode_val = vector_difference_type (0);
             p = count_map.begin();
             while (p != count_map.end()) {
                 if (p->second > mode_val) {
                     mode = p->first;
                     mode_val = p->second;
                 }
-                else if (p->second == mode_val && type_traits<value_type>::type_abs(p->first) < type_traits<value_type>::type_abs(mode))
+                else if (p->second == mode_val && type_traits<value_type>::type_abs (p->first) < type_traits<value_type>::type_abs (mode))
                     mode = p->first;
                 ++ p;
             }
             
             return mode;
+        }
+    };
+
+    template<class V>
+    struct vector_median:
+        public vector_scalar_unary_functor<V> {
+        typedef typename vector_scalar_unary_functor<V>::value_type value_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const vector_expression<E> &e) {
+            typedef typename E::size_type vector_size_type;
+            vector_size_type size (e ().size ());
+            vector<value_type> v (size);
+            for (int i = 0; i < size; ++ i)
+                v (i) = e () (i);
+            boost::sort (v, compareElement);
+            if (size % 2)
+                return v (size / 2);
+            else
+                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+        }
+
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) {
+            vector<value_type> v (size);
+            D size_temp = size;
+            D i = D (0);
+            while (-- size_temp >= 0) {
+                v (i) = *it;
+                ++ it;
+                ++  i;
+            }
+            boost::sort (v, compareElement);
+            if (size % 2)
+                return v (size / 2);
+            else
+                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+        }
+
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            typedef typename I::difference_type vector_difference_type;
+            vector_difference_type size = vector_difference_type (0);
+            I it1 = it;
+            while (it1 != it_end) {
+                ++ it1;
+                ++ size;
+            }
+            vector<value_type> v (size);
+            vector_difference_type i = vector_difference_type (0);
+            while (it != it_end) {
+                v (i) = *it;
+                ++ it;
+                ++ i;
+            }
+            
+            boost::sort (v, compareElement);
+            if (size % 2)
+                return v (size / 2);
+            else
+                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+        }
+
+        static BOOST_UBLAS_INLINE
+        bool compareElement (const value_type &A, const value_type &B) {
+            return (type_traits<value_type>::type_abs (A) < type_traits<value_type>::type_abs (B));
         }
     };
 
@@ -1780,6 +1855,82 @@ namespace boost { namespace numeric { namespace ublas {
         }
     };
 
+    template<class V>
+    struct matrix_median:
+        public matrix_scalar_unary_functor<V> {
+        typedef typename vector_scalar_unary_functor<V>::value_type value_type;
+        typedef typename vector_scalar_unary_functor<V>::result_type result_type;
+        
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const matrix_expression<E> &e) {
+            typedef typename E::size_type matrix_size_type;
+            matrix_size_type size1 (e ().size1 ());
+            matrix_size_type size2 (e ().size2 ());
+            matrix_size_type num_elements = size1 * size2;
+            vector<value_type> v (num_elements);
+            matrix_size_type k (0);
+            for (matrix_size_type i = 0; i < size1; ++ i)
+                for (matrix_size_type j = 0; j < size2; ++ j)
+                    v (k ++) = e () (i, j);
+            boost::sort (v, compareElement);
+            if (num_elements % 2)
+                return v (num_elements / 2);
+            else
+                return (v (num_elements / 2) + v ((num_elements / 2) + 1)) / 2;
+        }
+
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) {
+            vector<value_type> v (size);
+            D size_temp = size;
+            D i (0);
+            while (-- size_temp >= 0) {
+                v (i) = *it;
+                ++ it;
+                ++  i;
+            }
+            boost::sort (v, compareElement);
+            if (size % 2)
+                return v (size / 2);
+            else
+                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+        }
+
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            typedef typename I::difference_type matrix_difference_type;
+            matrix_difference_type size = matrix_difference_type (0);
+            I it1 = it;
+            while (it1 != it_end) {
+                ++ it1;
+                ++ size;
+            }
+            vector<value_type> v (size);
+            matrix_difference_type i (0);
+            while (it != it_end) {
+                v (i) = *it;
+                ++ it;
+                ++ i;
+            }
+            
+            boost::sort (v, compareElement);
+            if (size % 2)
+                return v (size / 2);
+            else
+                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+        }
+
+        static BOOST_UBLAS_INLINE
+        bool compareElement (const value_type &A, const value_type &B) {
+            return (type_traits<value_type>::type_abs (A) < type_traits<value_type>::type_abs (B));
+        }
+    };
+
     // Unary returning vector of value_type TV
 
     template<class M, class TV>
@@ -2591,6 +2742,167 @@ namespace boost { namespace numeric { namespace ublas {
         //         }
         //     }
         //     return t;
+        }
+    };
+
+    template<class M, class TV>
+    struct matrix_median_axis: 
+        public matrix_vector_unary_functor<M, TV> {
+        typedef typename matrix_vector_unary_functor<M, TV>::value_type value_type;
+        typedef typename matrix_vector_unary_functor<M, TV>::result_type result_type;
+
+        // template<class E>
+        // static BOOST_UBLAS_INLINE
+        // result_type apply (const matrix_expression<E> &e, typename E::size_type axis) {
+        //     typedef typename E::size_type matrix_size_type;
+        //     matrix_size_type size1 (e ().size1 ());
+        //     matrix_size_type size2 (e ().size2 ());
+
+        //     matrix_size_type result_vector_size = matrix_size_type(0);
+        //     if (axis == 0)
+        //         result_vector_size = size2;
+        //     else if (axis == 1)
+        //         result_vector_size = size1;
+
+        //     result_type t = result_type (result_vector_size);
+        //     for (matrix_size_type i = 0; i < result_vector_size; ++ i) {
+        //         t (i) = apply (e, axis, i);
+        //     }
+        //     return t;
+        // }
+
+        template<class E>
+        static BOOST_UBLAS_INLINE
+        result_type apply (const matrix_expression<E> &e, typename E::size_type axis, typename E::size_type index) {
+            typedef typename E::size_type matrix_size_type;
+            matrix_size_type size1 (e ().size1 ());
+            matrix_size_type size2 (e ().size2 ());
+
+            if (axis == 0){
+                vector<value_type> v (size1);
+                for (matrix_size_type i = 0; i < size1; ++ i)
+                    v (i) = e () (i, index);
+                boost::sort (v, compareElement);
+                if (size1 % 2)
+                    return v (size1 / 2);
+                else
+                    return (v (size1 / 2) + v ((size1 / 2) + 1)) / 2;
+
+            }
+            else if (axis == 1){
+                vector<value_type> v (size2);
+                for (matrix_size_type i = 0; i < size2; ++ i)
+                    v (i) = e () (index, i);
+                boost::sort (v, compareElement);
+                if (size2 % 2)
+                    return v (size2 / 2);
+                else
+                    return (v (size2 / 2) + v ((size2 / 2) + 1)) / 2;
+            }
+        }
+
+        // Dense case
+        template<class D, class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (D size, I it) {
+            vector<value_type> v (size);
+            D size_temp = size;
+            D i (0);
+            while (-- size_temp >= 0) {
+                v (i) = *it;
+                ++ it;
+                ++  i;
+            }
+            boost::sort (v, compareElement);
+            if (size % 2)
+                return v (size / 2);
+            else
+                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+        }
+
+        // Packed case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end) {
+            typedef typename I::difference_type matrix_difference_type;
+            matrix_difference_type size = matrix_difference_type (0);
+            I it1 = it;
+            while (it1 != it_end) {
+                ++ it1;
+                ++ size;
+            }
+            vector<value_type> v (size);
+            matrix_difference_type i (0);
+            while (it != it_end) {
+                v (i) = *it;
+                ++ it;
+                ++ i;
+            }
+            
+            boost::sort (v, compareElement);
+            if (size % 2)
+                return v (size / 2);
+            else
+                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+        }
+
+        // Sparse case
+        template<class I>
+        static BOOST_UBLAS_INLINE
+        result_type apply (I it, const I &it_end, sparse_bidirectional_iterator_tag) {
+            typedef typename I::difference_type matrix_difference_type;
+            matrix_difference_type size = matrix_difference_type (0);
+            I it1 = it;
+            while (it1 != it_end) {
+                ++ it1;
+                ++ size;
+            }
+            vector<value_type> v (size);
+            matrix_difference_type i (0);
+            while (it != it_end) {
+                v (i) = *it;
+                ++ it;
+                ++ i;
+            }
+            
+            boost::sort (v, compareElement);
+            if (size % 2)
+                return v (size / 2);
+            else
+                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+        //     result_type t = result_type (0);
+        //     if (it1 != it1_end && it2 != it2_end) {
+        //         size_type it1_index = it1.index2 (), it2_index = it2.index ();
+        //         for (;;) {
+        //             difference_type compare = it1_index - it2_index;
+        //             if (compare == 0) {
+        //                 t += *it1 * *it2, ++ it1, ++ it2;
+        //                 if (it1 != it1_end && it2 != it2_end) {
+        //                     it1_index = it1.index2 ();
+        //                     it2_index = it2.index ();
+        //                 } else
+        //                     break;
+        //             } else if (compare < 0) {
+        //                 increment (it1, it1_end, - compare);
+        //                 if (it1 != it1_end)
+        //                     it1_index = it1.index2 ();
+        //                 else
+        //                     break;
+        //             } else if (compare > 0) {
+        //                 increment (it2, it2_end, compare);
+        //                 if (it2 != it2_end)
+        //                     it2_index = it2.index ();
+        //                 else
+        //                     break;
+        //             }
+        //         }
+        //     }
+        //     return t;
+        }
+
+        static BOOST_UBLAS_INLINE
+        bool compareElement (const value_type &A, const value_type &B) {
+            return (type_traits<value_type>::type_abs (A) < type_traits<value_type>::type_abs (B));
         }
     };
 

@@ -26,6 +26,13 @@ int main () {
     m (0, 0) = 3;
     m (1, 2) = 1;
 
+    /*
+    3 1 2
+    1 2 1
+    2 3 4
+    1 1 1 2 2 2 3 3 4
+    */
+
     // auto p = m.find1(0, 0, 0);
     // while (p != m.end1()) {
     //     auto q = p.begin();
@@ -63,15 +70,15 @@ int main () {
     // }
 
     // std::cout << sum (m) << std::endl;
-    for (auto p : sum (m, 1)) {
-        std::cout << p << std::endl;    
-    }
+    // for (auto p : sum (m, 1)) {
+    //     std::cout << p << std::endl;    
+    // }
     // auto p = sum (m, 1).find (0);
     // while (p != sum (m, 1).end ()) {
     //     std::cout << *p << std::endl;
     //     ++ p;
     // }
-    std::cout << sum (m, 0) << std::endl;
+    // std::cout << sum (m, 0) << std::endl;
     // for (unsigned i = 0; i < 3; ++ i) {
     //     std::cout << sum (m, 0) (i) << std::endl;
     // }
@@ -94,9 +101,10 @@ int main () {
     //     std::cout << variance (m, 0) (i) << std::endl;
     // }
 
-    // std::cout << median (m) << std::endl;
-    std::cout << mode (m) << std::endl;
-    std::cout << mode (m, 0) << std::endl;
+    std::cout << median (m) << std::endl;
+    std::cout << median (m, 1) << std::endl;
+    // std::cout << mode (m) << std::endl;
+    // std::cout << mode (m, 0) << std::endl;
     
     // std::cout << variance_iterative (m) << std::endl;
     std::cout << norm_1 (m) << std::endl;

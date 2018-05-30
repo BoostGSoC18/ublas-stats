@@ -119,6 +119,8 @@ struct test_my_vector {
             std::cout << "variance_iterative (v1) = " << t << std::endl;
             t = ublas::mode (v1);
             std::cout << "mode (v1) = " << t << std::endl;
+            t = ublas::median (v1);
+            std::cout << "median (v1) = " << t << std::endl;
 
             n = ublas::norm_1 (v1);
             std::cout << "norm_1 (v1) = " << n << std::endl;

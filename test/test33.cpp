@@ -65,6 +65,8 @@ struct test_my_matrix {
             std::cout << "variance (m1) = " << t << std::endl;
             t = ublas::mode (m1);
             std::cout << "mode (m1) = " << t << std::endl;
+            t = ublas::median (m1);
+            std::cout << "median (m1) = " << t << std::endl;
 
             // Unary matrix operations resulting in a matrix
             initialize_matrix (m1);

@@ -69,6 +69,10 @@ struct test_my_matrix_vector {
             std::cout << "mode (m1, 0) = " << v1 << std::endl;
             v1 = ublas::mode (m1, 1);
             std::cout << "mode (m1, 1) = " << v1 << std::endl;
+            v1 = ublas::median (m1, 0);
+            std::cout << "median (m1, 0) = " << v1 << std::endl;
+            v1 = ublas::median (m1, 1);
+            std::cout << "median (m1, 1) = " << v1 << std::endl;
 
         }
     }

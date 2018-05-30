@@ -5654,6 +5654,14 @@ namespace boost { namespace numeric { namespace ublas {
 
     template<class E>
     BOOST_UBLAS_INLINE
+    typename matrix_scalar_unary_traits<E, matrix_median<E> >::result_type
+    median (const matrix_expression<E> &e) {
+        typedef typename matrix_scalar_unary_traits<E, matrix_median<E> >::expression_type expression_type;
+        return expression_type (e ());
+    }
+
+    template<class E>
+    BOOST_UBLAS_INLINE
     typename matrix_scalar_unary_traits<E, matrix_norm_1<E> >::result_type
     norm_1 (const matrix_expression<E> &e) {
         typedef typename matrix_scalar_unary_traits<E, matrix_norm_1<E> >::expression_type expression_type;
@@ -6057,6 +6065,14 @@ namespace boost { namespace numeric { namespace ublas {
     typename matrix_vector_unary_traits<E, matrix_mode_axis<E, typename E::value_type> >::result_type
     mode (const matrix_expression<E> &e, typename E::size_type axis) {
         typedef typename matrix_vector_unary_traits<E, matrix_mode_axis<E, typename E::value_type> >::expression_type expression_type;
+        return expression_type (e (), axis);
+    }
+
+    template<class E>
+    BOOST_UBLAS_INLINE
+    typename matrix_vector_unary_traits<E, matrix_median_axis<E, typename E::value_type> >::result_type
+    median (const matrix_expression<E> &e, typename E::size_type axis) {
+        typedef typename matrix_vector_unary_traits<E, matrix_median_axis<E, typename E::value_type> >::expression_type expression_type;
         return expression_type (e (), axis);
     }
 
