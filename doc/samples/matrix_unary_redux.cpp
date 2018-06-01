@@ -11,12 +11,17 @@
 //
 
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
+#include <boost/numeric/ublas/vector.hpp>
+#include <boost/numeric/ublas/symmetric.hpp>
+
+#include <boost/numeric/ublas/covariance_matrix.hpp>
 
 #include <boost/numeric/ublas/io.hpp>
 
 int main () {
     using namespace boost::numeric::ublas;
-    matrix<int> m (3, 3);
+    matrix<double> m (3, 3);
     for (unsigned i = 0; i < m.size1 (); ++ i) {
         for (unsigned j = 0; j < m.size2 (); ++ j) {
             m (i, j) = i+j;
@@ -30,8 +35,20 @@ int main () {
     3 1 2
     1 2 1
     2 3 4
-    1 1 1 2 2 2 3 3 4
     */
+
+    matrix<double> m1 (3, 5);
+    m1 (0, 0) = 90; m1 (0, 1) = 30; m1 (0, 2) = 60; m1 (0, 3) = 90; m1 (0, 4) = 30;
+    m1 (1, 0) = 60; m1 (1, 1) = 90; m1 (1, 2) = 60; m1 (1, 3) = 60; m1 (1, 4) = 30;
+    m1 (2, 0) = 90; m1 (2, 1) = 90; m1 (2, 2) = 60; m1 (2, 3) = 60; m1 (2, 4) = 30;
+
+    // symmetric_matrix<double, lower> cov (3);
+    // for (int i = 0; i < m1.size1 (); i++) {
+    //     for (int j = 0; j <= i; j++) {
+    //         cov (i, j) = covariance (row (m1, i), row (m1, j));
+    //     }
+    // }
+    std::cout << covariance_matrix (m1) << std::endl;
 
     // auto p = m.find1(0, 0, 0);
     // while (p != m.end1()) {
@@ -101,14 +118,14 @@ int main () {
     //     std::cout << variance (m, 0) (i) << std::endl;
     // }
 
-    std::cout << median (m) << std::endl;
-    std::cout << median (m, 1) << std::endl;
+    // std::cout << median (m) << std::endl;
+    // std::cout << median (m, 1) << std::endl;
     // std::cout << mode (m) << std::endl;
     // std::cout << mode (m, 0) << std::endl;
     
     // std::cout << variance_iterative (m) << std::endl;
-    std::cout << norm_1 (m) << std::endl;
-    std::cout << norm_frobenius (m) << std::endl;
-    std::cout << norm_inf (m) << std::endl;
+    // std::cout << norm_1 (m) << std::endl;
+    // std::cout << norm_frobenius (m) << std::endl;
+    // std::cout << norm_inf (m) << std::endl;
 }
 
