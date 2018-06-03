@@ -27,6 +27,8 @@
 #endif
 #include <boost/numeric/ublas/io.hpp>
 
+#include <boost/numeric/ublas/covariance_matrix.hpp>
+
 namespace ublas = boost::numeric::ublas;
 
 #include "common/init.hpp"

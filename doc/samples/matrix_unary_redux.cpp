@@ -16,6 +16,7 @@
 #include <boost/numeric/ublas/symmetric.hpp>
 
 #include <boost/numeric/ublas/covariance_matrix.hpp>
+#include <boost/numeric/ublas/histogram.hpp>
 
 #include <boost/numeric/ublas/io.hpp>
 

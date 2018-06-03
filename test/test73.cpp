@@ -108,6 +108,12 @@ struct test_my_matrix {
             m2 = ublas::herm (m1);
             std::cout << "herm (m1) = " << m2 << std::endl;
 
+            // Covariance matrix
+            m2 = ublas::covariance_matrix (m1);
+            std::cout << "covariance_matrix (m1) = " << m2 << std::endl;
+            m2 = ublas::covariance_matrix (m1, False);
+            std::cout << "covariance_matrix (m1) = " << m2 << std::endl;
+
             // Matrix multiplication
             initialize_matrix (m1);
             initialize_matrix (m2);
