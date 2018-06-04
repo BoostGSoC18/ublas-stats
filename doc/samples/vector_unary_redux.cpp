@@ -13,12 +13,15 @@
 #include <boost/numeric/ublas/vector.hpp>
 
 #include <boost/numeric/ublas/traits.hpp>
+#include <boost/numeric/ublas/io.hpp>
+
+#include <boost/numeric/ublas/histogram.hpp>
 
 int main () {
     using namespace boost::numeric::ublas;
-    vector<int> v (10);
+    vector<int> v (11);
     for (unsigned i = 0; i < v.size (); ++ i)
-        v (i) = 10 - i;
+        v (i) = i;
     // v (0) = 1;
     // v (9) = 1;
 
@@ -28,7 +31,7 @@ int main () {
     // std::cout << sum (v) << std::endl;
     // std::cout << mean (v) << std::endl;
     // std::cout << mean_iterative (v) << std::endl;
-    std::cout << median (v) << std::endl;
+    // std::cout << median (v) << std::endl;
     // std::cout << mode (v) << std::endl;
     // std::cout << variance (v) << std::endl;
     // std::cout << variance_iterative (v) << std::endl;
@@ -36,5 +39,12 @@ int main () {
     // std::cout << norm_2 (v) << std::endl;
     // std::cout << norm_inf (v) << std::endl;
     // std::cout << index_norm_inf (v) << std::endl;
+
+    vector<double> v1 (6);
+    v1 (0) = 1; v1 (1) = 14.5;
+    v1 (2) = 3.7; v1 (3) = 2.3;
+    v1 (4) = 3.699; v1 (5) = 7;
+
+    std::cout << histogram (v1, 5) << std::endl;
 }
 

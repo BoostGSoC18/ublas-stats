@@ -22,6 +22,7 @@
 
 namespace boost { namespace numeric { namespace ublas {
 
+    BOOST_UBLAS_INLINE
     template <class M>
     symmetric_matrix<typename M::value_type, lower> covariance_matrix (const M &m, bool rowvar = true) {
         typedef typename M::value_type value_type;
