@@ -46,5 +46,13 @@ int main () {
     v1 (4) = 3.699; v1 (5) = 7;
 
     std::cout << histogram (v1, 5) << std::endl;
+
+    vector<double> v2 (6);
+    v2 (0) = 1.0; v2 (1) = 3.7;
+    v2 (2) = 6.4; v2 (3) = 9.1;
+    v2 (4) = 11.8; v2 (5) = 14.5;
+
+    std::cout << histogram (v1, v2) << std::endl;
+
 }
 
