@@ -56,19 +56,48 @@ namespace boost { namespace numeric { namespace ublas {
 
     }
 
-
     BOOST_UBLAS_INLINE
-    template<class V1, class V2>
-    vector<int> histogram (const V1 &v, const V2 &bin_edges) {
-        typedef typename V1::value_type value_type1;
-        typedef typename V1::size_type size_type1;
-        typedef typename V2::value_type value_type2;
-        typedef typename V2::size_type size_type2;
+    template<class V>
+    vector<int> histogram (V v, const V &bin_edges) {
+        typedef typename V::value_type value_type;
+        typedef typename V::size_type size_type;
 
-        size_type1 size1 (v.size ());
-        size_type2 size2 (bin_edges.size ());
+        size_type size1 (v.size ());
 
-        vector<int> bin_counts (size2);
+        assert (size1 > 0 && "Vector is empty.");
+        
+        size_type size2 (bin_edges.size ());
+
+        assert (size2 > 1 && "Number of bins should be positive.");
+
+        for (size_type i = 0; i < size2 - 1; ++ i)
+            assert ((bin_edges (i) < bin_edges (i + 1)) &&
+                "Bin edges must be monotonically increasing.");
+
+        vector<int> bin_counts (size2 - 1);
+        for (int i = 0; i < bin_counts.size (); ++ i)
+            bin_counts (i) = 0;
+
+        boost::sort (v);
+
+        if (v (0) < bin_edges (0) || v (size1 - 1) > bin_edges (size2 - 1))
+            return bin_counts;
+
+        size_type vcounter = size_type (0);
+        size_type bincounter = size_type (1);
+        while (vcounter < size1 && bincounter < size2) {
+            if (v (vcounter) < bin_edges (bincounter)) {
+                bin_counts (bincounter - 1) += 1;
+                ++ vcounter;
+            }
+            else
+                ++ bincounter;
+        }
+
+        while (vcounter < size1 && v (vcounter) == bin_edges (size2 - 1)) {
+            bin_counts (size2 - 2) += 1;
+            ++ vcounter;
+        }
 
         return bin_counts;
     }
