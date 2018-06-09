@@ -795,7 +795,7 @@ namespace boost { namespace numeric { namespace ublas {
             if (size % 2)
                 return v (size / 2);
             else
-                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+                return (v (size / 2) + v ((size / 2) - 1)) / 2;
         }
 
         // Dense case
@@ -814,7 +814,7 @@ namespace boost { namespace numeric { namespace ublas {
             if (size % 2)
                 return v (size / 2);
             else
-                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+                return (v (size / 2) + v ((size / 2) - 1)) / 2;
         }
 
         // Sparse case
@@ -840,7 +840,7 @@ namespace boost { namespace numeric { namespace ublas {
             if (size % 2)
                 return v (size / 2);
             else
-                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+                return (v (size / 2) + v ((size / 2) - 1)) / 2;
         }
 
         static BOOST_UBLAS_INLINE
@@ -1877,7 +1877,7 @@ namespace boost { namespace numeric { namespace ublas {
             if (num_elements % 2)
                 return v (num_elements / 2);
             else
-                return (v (num_elements / 2) + v ((num_elements / 2) + 1)) / 2;
+                return (v (num_elements / 2) + v ((num_elements / 2) - 1)) / 2;
         }
 
         // Dense case
@@ -1896,7 +1896,7 @@ namespace boost { namespace numeric { namespace ublas {
             if (size % 2)
                 return v (size / 2);
             else
-                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+                return (v (size / 2) + v ((size / 2) - 1)) / 2;
         }
 
         // Sparse case
@@ -1922,7 +1922,7 @@ namespace boost { namespace numeric { namespace ublas {
             if (size % 2)
                 return v (size / 2);
             else
-                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+                return (v (size / 2) + v ((size / 2) - 1)) / 2;
         }
 
         static BOOST_UBLAS_INLINE
@@ -2786,7 +2786,7 @@ namespace boost { namespace numeric { namespace ublas {
                 if (size1 % 2)
                     return v (size1 / 2);
                 else
-                    return (v (size1 / 2) + v ((size1 / 2) + 1)) / 2;
+                    return (v (size1 / 2) + v ((size1 / 2) - 1)) / 2;
 
             }
             else if (axis == 1){
@@ -2797,7 +2797,7 @@ namespace boost { namespace numeric { namespace ublas {
                 if (size2 % 2)
                     return v (size2 / 2);
                 else
-                    return (v (size2 / 2) + v ((size2 / 2) + 1)) / 2;
+                    return (v (size2 / 2) + v ((size2 / 2) - 1)) / 2;
             }
         }
 
@@ -2817,7 +2817,7 @@ namespace boost { namespace numeric { namespace ublas {
             if (size % 2)
                 return v (size / 2);
             else
-                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+                return (v (size / 2) + v ((size / 2) - 1)) / 2;
         }
 
         // Packed case
@@ -2843,7 +2843,7 @@ namespace boost { namespace numeric { namespace ublas {
             if (size % 2)
                 return v (size / 2);
             else
-                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+                return (v (size / 2) + v ((size / 2) - 1)) / 2;
         }
 
         // Sparse case
@@ -2869,7 +2869,7 @@ namespace boost { namespace numeric { namespace ublas {
             if (size % 2)
                 return v (size / 2);
             else
-                return (v (size / 2) + v ((size / 2) + 1)) / 2;
+                return (v (size / 2) + v ((size / 2) - 1)) / 2;
         //     result_type t = result_type (0);
         //     if (it1 != it1_end && it2 != it2_end) {
         //         size_type it1_index = it1.index2 (), it2_index = it2.index ();

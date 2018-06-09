@@ -5721,9 +5721,9 @@ namespace boost { namespace numeric { namespace ublas {
         BOOST_UBLAS_INLINE
         size_type size () const {
             if (axis_ == 0)
-                return e_.size1 ();
-            else if (axis_ == 1)
                 return e_.size2 ();
+            else if (axis_ == 1)
+                return e_.size1 ();
         }
 
     private:

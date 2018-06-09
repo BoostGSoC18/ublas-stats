@@ -250,4 +250,6 @@ test-suite numeric/uBLAS
       ]
       [ run test_matrix_vector.cpp
       ]
+      [ run test_basic_stats.cpp
+      ]
     ;
