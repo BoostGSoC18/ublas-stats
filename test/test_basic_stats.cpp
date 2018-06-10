@@ -4,6 +4,7 @@
 
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/covariance_matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
 #include "utils.hpp"
@@ -500,6 +501,93 @@ BOOST_UBLAS_TEST_DEF (test_variance) {
     }
 }
 
+/*
+std::string VECTOR_INPUT_SET [] = {"[3](1,4,1)\0", "[3](1.023, 2.349, 7.839)\0"};
+int vector_input_set_size = 2;
+
+std::string MATRIX_INPUT_SET [] = {"[3,3]((2,3,1),(2,3,4),(4,3,5))\0", "[2,4]((1,2,0,3),(2,1.99,0,2.0001))\0"};
+int matrix_input_set_size = 2;
+*/
+BOOST_UBLAS_TEST_DEF (test_vector_covariance) {
+    BOOST_UBLAS_DEBUG_TRACE("Vector Covariance");
+
+    vector<double> v1;
+    std::istringstream is1 (VECTOR_INPUT_SET [0]);
+    is1 >> v1;
+
+    vector<double> v2;
+    std::istringstream is2 (VECTOR_INPUT_SET [1]);
+    is2 >> v2;
+    
+    double cov_gt = -1.388;
+    BOOST_UBLAS_TEST_CHECK (std::abs (covariance (v1, v2) - cov_gt) <= TOL);
+
+    // Covariance of identical vectors is just the variance.
+    BOOST_UBLAS_TEST_CHECK (std::abs (covariance (v1, v1) - variance (v1)) <= TOL );
+    BOOST_UBLAS_TEST_CHECK (std::abs (covariance (v2, v2) - variance (v2)) <= TOL );
+}
+
+/*
+std::string VECTOR_INPUT_SET [] = {"[3](1,4,1)\0", "[3](1.023, 2.349, 7.839)\0"};
+int vector_input_set_size = 2;
+
+std::string MATRIX_INPUT_SET [] = {"[3,3]((2,3,1),(2,3,4),(4,3,5))\0", "[2,4]((1,2,0,3),(2,1.99,0,2.0001))\0"};
+int matrix_input_set_size = 2;
+*/
+BOOST_UBLAS_TEST_DEF (test_covariance_matrix) {
+    BOOST_UBLAS_DEBUG_TRACE("Covariance Matrix");
+
+    std::string COVARIANCE_MATRIX_ROWVAR_0_RESULT_SET [] = {"[3,3]((0.88888889,0,1.11111111),(0,0,0),(1.11111111,0,2.88888889))","[4,4]((0.25,-0.0025,0,-0.249975),(-0.0025,0.000025,0,0.00249975),(0,0,0,0),(-0.249975,0.00249975,0,0.24995))"};
+    std::string COVARIANCE_MATRIX_ROWVAR_1_RESULT_SET [] = {"[3,3]((0.66666667,-0.33333333,-0.66666667),(-0.33333333,0.66666667,0.33333333),(-0.66666667,0.33333333,0.66666667))","[2,2]((1.25,0.7487875),(0.7487875,0.74754388))"};
+    for (int rvar = 0; rvar < 2; ++ rvar)
+        for (int i = 0; i < matrix_input_set_size; ++ i) {
+            // std::cout << "Test matrix " << i << ": ";
+            
+            int _fail;
+            matrix<double> m;
+            std::istringstream is(MATRIX_INPUT_SET [i]);
+            is >> m;
+
+            matrix<double> cov = covariance_matrix (m, rvar);
+            // std::cout << cov << std::endl;
+            
+            // Cov should be symmetric.
+            BOOST_UBLAS_TEST_CHECK (cov.size1 () == cov.size2 ());
+            for (unsigned int j = 0; j < cov.size1 (); ++ j)
+                for (unsigned int k = 0; k <= j; ++ k)
+                    BOOST_UBLAS_TEST_CHECK (cov (j,k) == cov (k,j));
+
+            if (rvar == 0) {
+                BOOST_UBLAS_TEST_CHECK (cov.size1 () == m.size2 ());
+                matrix<double> gt0;
+                std::istringstream is0 (COVARIANCE_MATRIX_ROWVAR_0_RESULT_SET [i]);
+                is0 >> gt0;
+                _fail = 0;
+                for (unsigned int j = 0; j < cov.size1 (); ++ j)
+                    for (unsigned int k = 0; k <= j; ++ k)
+                        if (std::abs (cov (j,k) - gt0 (j,k)) > TOL) {
+                            _fail = 1;
+                            break;
+                        }
+                BOOST_UBLAS_TEST_CHECK (_fail == 0);
+            }
+            else if (rvar == 1) {
+                BOOST_UBLAS_TEST_CHECK (cov.size1 () == m.size1 ());
+                matrix<double> gt1;
+                std::istringstream is1 (COVARIANCE_MATRIX_ROWVAR_1_RESULT_SET [i]);
+                is1 >> gt1;
+                _fail = 0;
+                for (unsigned int j = 0; j < cov.size1 (); ++ j)
+                    for (unsigned int k = 0; k <= j; ++ k)
+                        if (std::abs (cov (j,k) - gt1 (j,k)) > TOL) {
+                            _fail = 1;
+                            break;
+                        }
+                BOOST_UBLAS_TEST_CHECK (_fail == 0);
+            }
+        }
+}
+
 int main() {
     
     BOOST_UBLAS_TEST_SUITE("Basic Stats Test Suite");
@@ -512,6 +600,8 @@ int main() {
         BOOST_UBLAS_TEST_DO( test_mode );
         BOOST_UBLAS_TEST_DO( test_median );
         BOOST_UBLAS_TEST_DO( test_variance );
+        BOOST_UBLAS_TEST_DO( test_vector_covariance );
+        BOOST_UBLAS_TEST_DO( test_covariance_matrix );
     BOOST_UBLAS_TEST_END();
 
     return 0;

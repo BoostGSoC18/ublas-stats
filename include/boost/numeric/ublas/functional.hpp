@@ -1377,7 +1377,8 @@ namespace boost { namespace numeric { namespace ublas {
                 mean2 += del2,
                 t += i * del1 * del2 - t / (i + 1), ++ i);
 #endif
-            return size / (size - 1) * t;
+            // return size / (size - 1) * t;
+            return t;
         }
 
         // Dense case
