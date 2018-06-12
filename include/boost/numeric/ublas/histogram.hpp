@@ -19,6 +19,8 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 
+static const double TOLER = 1e-12;
+
 namespace boost { namespace numeric { namespace ublas {
 
     BOOST_UBLAS_INLINE
@@ -33,7 +35,7 @@ namespace boost { namespace numeric { namespace ublas {
 
         assert (nbins > 0 && "Number of bins should be positive.");
 
-        double bin_size = (max (v) - min (v)) / (double)(nbins);
+        value_type bin_size = (max (v) - min (v)) / (nbins);
 
         assert ((bin_size > 0 || (bin_size == 0 && nbins == 1)) && "Bin size cannot be zero.");
 
@@ -44,16 +46,17 @@ namespace boost { namespace numeric { namespace ublas {
         if (nbins == 1)
             bin_counts (0) = vsize;
         else {    
-            value_type minVal = min (v);
+            value_type min_val = min (v);
             for (size_type i = 0; i < vsize; ++ i) {
-                int bin_index = (v (i) - minVal) / bin_size;
+                int bin_index = (v (i) - min_val) / bin_size;
+                if ((double)(bin_index + 1) - ((v (i) - min_val) / bin_size) <= TOLER)
+                    bin_index += 1;
                 bin_index = (bin_index >= nbins) ? (nbins - 1) : bin_index;
                 bin_counts (bin_index) += 1;
             }
         }
 
         return bin_counts;
-
     }
 
     BOOST_UBLAS_INLINE
@@ -80,13 +83,13 @@ namespace boost { namespace numeric { namespace ublas {
 
         boost::sort (v);
 
-        if (v (0) < bin_edges (0) || v (size1 - 1) > bin_edges (size2 - 1))
+        if (v (0) > bin_edges (size2 - 1) || v (size1 - 1) < bin_edges (0))
             return bin_counts;
 
         size_type vcounter = size_type (0);
         size_type bincounter = size_type (1);
         while (vcounter < size1 && bincounter < size2) {
-            if (v (vcounter) < bin_edges (bincounter)) {
+            if (bin_edges (bincounter) - v (vcounter) >= TOLER) {
                 bin_counts (bincounter - 1) += 1;
                 ++ vcounter;
             }
@@ -94,13 +97,12 @@ namespace boost { namespace numeric { namespace ublas {
                 ++ bincounter;
         }
 
-        while (vcounter < size1 && v (vcounter) == bin_edges (size2 - 1)) {
+        while (vcounter < size1 && v (vcounter) <= bin_edges (size2 - 1)) {
             bin_counts (size2 - 2) += 1;
             ++ vcounter;
         }
 
         return bin_counts;
     }
-
 
 }}}

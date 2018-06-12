@@ -1,5 +1,3 @@
-// #include <iostream>
-#include <iomanip>
 #include <string>
 
 #include <boost/numeric/ublas/vector.hpp>
@@ -527,13 +525,6 @@ BOOST_UBLAS_TEST_DEF (test_vector_covariance) {
     BOOST_UBLAS_TEST_CHECK (std::abs (covariance (v2, v2) - variance (v2)) <= TOL );
 }
 
-/*
-std::string VECTOR_INPUT_SET [] = {"[3](1,4,1)\0", "[3](1.023, 2.349, 7.839)\0"};
-int vector_input_set_size = 2;
-
-std::string MATRIX_INPUT_SET [] = {"[3,3]((2,3,1),(2,3,4),(4,3,5))\0", "[2,4]((1,2,0,3),(2,1.99,0,2.0001))\0"};
-int matrix_input_set_size = 2;
-*/
 BOOST_UBLAS_TEST_DEF (test_covariance_matrix) {
     BOOST_UBLAS_DEBUG_TRACE("Covariance Matrix");
 
