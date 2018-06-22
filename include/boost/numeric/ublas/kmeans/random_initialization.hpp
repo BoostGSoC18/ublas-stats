@@ -14,8 +14,14 @@
 #ifndef _BOOST_UBLAS_RANDOM_INITIALIZATION_
 #define _BOOST_UBLAS_RANDOM_INITIALIZATION_
 
-
 #include <boost/numeric/ublas/matrix.hpp>
+
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
+
+#include <boost/container/set.hpp>
+
+boost::random::mt19937 gen;
 
 namespace boost { namespace numeric { namespace ublas {
 
@@ -24,7 +30,19 @@ namespace boost { namespace numeric { namespace ublas {
         RandomInitialization () {}
 
         template <class MatrixType>
-        static Initialize (const MatrixType &data, const size_type num_clusters, const matrix<double> &centroids) {}
+        static void Initialize (const MatrixType &data, const size_t num_clusters, matrix<double> &centroids) {
+            /*
+            Since we are initializing the centroids using random data points,
+            what happens if same data point becomes a centroid twice?
+            This will lead to empty clusters. Should be handled by EmptyClusterPolicy
+            or here only? eg set<size_t> selected_indices;
+            */
+            for (size_t i = 0; i < num_clusters; ++ i) {
+                boost::random::uniform_int_distribution<> dist(0, data.size1 () - 1);
+                size_t index = dist (gen);
+                centroids (i) = data (index);
+            }
+        }
     }
 }
 
