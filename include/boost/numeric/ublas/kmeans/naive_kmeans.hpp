@@ -21,15 +21,17 @@ namespace boost { namespace numeric { namespace ublas {
 
     class NaiveKMeans {
     public:
-        template </*class MetricType,*/ class MatrixType>
-        NaiveKMeans (MatrixType &data/*, MetricType distance_metric*/) {}
+        template <class MatrixType/*, class MetricType*/>
+        NaiveKMeans (MatrixType &data/*, MetricType distance_metric*/) :
+        /*distance_metric (distance_metric),*/
+        data (data) {}
 
         double Iterate (matrix<double> &centroids, matrix<double>& new_centroids) {}
 
     private:
         MatrixType data;
         /*MetricType distance_metric;*/
-        
+
     }
 }
 

@@ -24,7 +24,7 @@ namespace boost { namespace numeric { namespace ublas {
         RefinedStart () {}
 
         template <class MatrixType>
-        static Initialize (const MatrixType &data, size_type num_clusters, const matrix<double> &centroids) {}
+        static Initialize (const MatrixType &data, const size_type num_clusters, const matrix<double> &centroids) {}
     }
 }
 
