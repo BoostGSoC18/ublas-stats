@@ -79,7 +79,6 @@ namespace boost { namespace numeric { namespace ublas {
 
             Cluster (data, num_clusters, cluster_centroids);
 
-            vector<double> cluster_centroid_distance (num_clusters);
             for (size_t i = 0; i < data.size1 (); ++ i) {
                 matrix_row<MatrixType> data_row (data, i);
                 size_t assigned_cluster = 0;
@@ -99,7 +98,7 @@ namespace boost { namespace numeric { namespace ublas {
                         assigned_cluster = j;
                     }
                 }
-                cluster_assignments = assigned_cluster;
+                cluster_assignments (i) = assigned_cluster;
             }
         }
 

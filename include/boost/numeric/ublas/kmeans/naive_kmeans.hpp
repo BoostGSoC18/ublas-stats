@@ -26,12 +26,43 @@ namespace boost { namespace numeric { namespace ublas {
         /*distance_metric (distance_metric),*/
         data (data) {}
 
-        double Iterate (matrix<double> &centroids, matrix<double>& new_centroids) {}
+        double Iterate (matrix<double> &centroids, matrix<double>& new_centroids) {
+            vector<int>  data_points_per_centroid (centroids.size1 ());
+
+            vector<int> cluster_assignments (data.size1 ());
+
+            for (size_t i = 0; i < data.size1 (); ++ i) {
+                matrix_row<MatrixType> data_row (data, i);
+                size_t assigned_cluster = 0;
+                /*
+                Use distance_metric.Apply () here, when implemented.
+                double min_centroid_distance = distance_metric.Apply (data_row, row (cluster_centroids, 0));
+                */
+                double min_centroid_distance = inner_prod (data_row - row (cluster_centroids, 0));
+                for (size_t j = 1; j < cluster_centroids.size1 (); ++ j) {
+                    /*
+                    Use distance_metric.Apply () here, when implemented.
+                    double min_centroid_distance = distance_metric.Apply (data_row, row (cluster_centroids, 0));
+                    */
+                    double distance = inner_prod (data_row - row (cluster_centroids, j));
+                    if (distance < min_centroid_distance) {
+                        min_centroid_distance = distance;
+                        assigned_cluster = j;
+                    }
+                }
+                cluster_assignments (i) = assigned_cluster;
+                new_centroids (assigned_cluster) += data_row;
+                data_points_per_centroid (assigned_cluster) += 1;
+            }
+
+            for (size_t i = 0; i < new_centroids.size1 (); ++ i)
+                new_centroids (i) /= data_points_per_centroid (i);
+
+        }
 
     private:
         MatrixType data;
         /*MetricType distance_metric;*/
-
     }
 }
 
