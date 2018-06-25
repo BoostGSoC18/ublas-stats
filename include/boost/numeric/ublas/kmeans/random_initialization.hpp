@@ -15,6 +15,7 @@
 #define _BOOST_UBLAS_RANDOM_INITIALIZATION_
 
 #include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/matrix_proxy.hpp>
 
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
@@ -40,10 +41,12 @@ namespace boost { namespace numeric { namespace ublas {
             for (size_t i = 0; i < num_clusters; ++ i) {
                 boost::random::uniform_int_distribution<> dist(0, data.size1 () - 1);
                 size_t index = dist (gen);
-                centroids (i) = data (index);
+                row (centroids, i) = row (data, index);
+                // for (size_t j = 0; j < centroids.size2 (); ++j)
+                //     centroids (i, j) = data (index, j);
             }
         }
-    }
-}
+    };
+}}}
 
 #endif

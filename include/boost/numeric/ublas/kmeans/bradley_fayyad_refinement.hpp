@@ -14,7 +14,6 @@
 #ifndef _BOOST_UBLAS_REFINED_START_
 #define _BOOST_UBLAS_REFINED_START_
 
-
 #include <boost/numeric/ublas/matrix.hpp>
 
 namespace boost { namespace numeric { namespace ublas {
@@ -24,8 +23,8 @@ namespace boost { namespace numeric { namespace ublas {
         RefinedStart () {}
 
         template <class MatrixType>
-        static Initialize (const MatrixType &data, const size_type num_clusters, const matrix<double> &centroids) {}
-    }
-}
+        static void Initialize (const MatrixType &data, const size_type num_clusters, const matrix<double> &centroids) {}
+    };
+}}}
 
 #endif
