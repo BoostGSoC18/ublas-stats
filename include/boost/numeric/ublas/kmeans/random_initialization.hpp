@@ -22,7 +22,7 @@
 
 #include <boost/container/set.hpp>
 
-boost::random::mt19937 gen;
+#include <ctime>
 
 namespace boost { namespace numeric { namespace ublas {
 
@@ -38,8 +38,11 @@ namespace boost { namespace numeric { namespace ublas {
             This will lead to empty clusters. Should be handled by EmptyClusterPolicy
             or here only? eg set<size_t> selected_indices;
             */
+            boost::random::mt19937 gen;
+            gen.seed(static_cast<unsigned int> (std::time (0)));;
+            
             for (size_t i = 0; i < num_clusters; ++ i) {
-                boost::random::uniform_int_distribution<> dist(0, data.size1 () - 1);
+                boost::random::uniform_int_distribution<> dist (0, data.size1 () - 1);
                 size_t index = dist (gen);
                 row (centroids, i) = row (data, index);
                 // for (size_t j = 0; j < centroids.size2 (); ++j)

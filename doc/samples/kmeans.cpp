@@ -4,6 +4,7 @@
 
 #include <boost/numeric/ublas/kmeans/kmeans.hpp>
 #include <boost/numeric/ublas/kmeans/random_initialization.hpp>
+#include <boost/numeric/ublas/kmeans/kmeans++.hpp>
 #include <boost/numeric/ublas/kmeans/naive_kmeans.hpp>
 
 #include <string.h>
@@ -24,7 +25,8 @@ int main() {
         std::cin >> gt (i);
     }
 
-    KMeans<RandomInitialization, NaiveKMeans> kmeans(100);
+    // KMeans<RandomInitialization, NaiveKMeans> kmeans(100);
+    KMeans<KMeansPlusPlus, NaiveKMeans> kmeans(100);
     // std::cout << "init!" << std::endl;
     int n = 3;
     vector<int> assignments (data2.size1 ());
@@ -36,8 +38,8 @@ int main() {
         // std::cout << row (data2, i) << " " << assignments (i) << " " << gt (i) << std::endl;
         for (int j = 0; j < data2.size2 (); j++)
             std::cout << data2 (i,j) << " ";
-        std::cout << assignments (i) << std::endl;
-        // std::cout << gt (i) << std::endl;
+        // std::cout << assignments (i) << std::endl;
+        std::cout << gt (i) << std::endl;
     }
     return 0;
 }
