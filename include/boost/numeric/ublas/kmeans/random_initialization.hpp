@@ -31,7 +31,7 @@ namespace boost { namespace numeric { namespace ublas {
         RandomInitialization () {}
 
         template <class MatrixType>
-        static void Initialize (const MatrixType &data, const size_t num_clusters, matrix<double> &centroids) {
+        void Initialize (const MatrixType &data, const size_t num_clusters, matrix<double> &centroids) {
             /*
             Since we are initializing the centroids using random data points,
             what happens if same data point becomes a centroid twice?

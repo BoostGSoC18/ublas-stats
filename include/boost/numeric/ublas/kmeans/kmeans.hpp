@@ -82,8 +82,8 @@ namespace boost { namespace numeric { namespace ublas {
 
             // std::cout << "evaluate iterations done!" << std::endl;
 
-            std::cout << new_cluster_centroids.size1() << " " << new_cluster_centroids.size2 () << std::endl;
-            std::cout << cluster_centroids.size1() << " " << cluster_centroids.size2 () << std::endl;
+            // std::cout << new_cluster_centroids.size1() << " " << new_cluster_centroids.size2 () << std::endl;
+            // std::cout << cluster_centroids.size1() << " " << cluster_centroids.size2 () << std::endl;
             
             cluster_centroids = new_cluster_centroids;
             // for (size_t i = 0; i < cluster_centroids.size1 (); ++ i)

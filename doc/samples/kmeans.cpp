@@ -5,6 +5,7 @@
 #include <boost/numeric/ublas/kmeans/kmeans.hpp>
 #include <boost/numeric/ublas/kmeans/random_initialization.hpp>
 #include <boost/numeric/ublas/kmeans/kmeans++.hpp>
+#include <boost/numeric/ublas/kmeans/bradley_fayyad_refinement.hpp>
 #include <boost/numeric/ublas/kmeans/naive_kmeans.hpp>
 
 #include <string.h>
@@ -26,7 +27,8 @@ int main() {
     }
 
     // KMeans<RandomInitialization, NaiveKMeans> kmeans(100);
-    KMeans<KMeansPlusPlus, NaiveKMeans> kmeans(100);
+    // KMeans<KMeansPlusPlus, NaiveKMeans> kmeans(100);
+    KMeans<RefinedStart, NaiveKMeans> kmeans(100);
     // std::cout << "init!" << std::endl;
     int n = 3;
     vector<int> assignments (data2.size1 ());
