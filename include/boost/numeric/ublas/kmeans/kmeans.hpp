@@ -39,7 +39,7 @@ namespace boost { namespace numeric { namespace ublas {
         template <class MatrixType>
         void Cluster (const MatrixType &data,
                       const size_t num_clusters,
-                      vector<int> &cluster_assignments) {
+                      vector<size_t> &cluster_assignments) {
             
             matrix<double> cluster_centroids (num_clusters, data.size2 ());
             Cluster (data, num_clusters, cluster_centroids, cluster_assignments);
@@ -53,6 +53,9 @@ namespace boost { namespace numeric { namespace ublas {
             GetInitialCentroids (data, num_clusters, cluster_centroids);
 
             // std::cout << "got init centroids!" << std::endl;
+
+            if (max_iterations == 0)
+                return;
 
             double norm = 0;
             size_t num_iterations = 0;
@@ -97,7 +100,7 @@ namespace boost { namespace numeric { namespace ublas {
         void Cluster (const MatrixType &data,
               const size_t num_clusters,
               matrix<double> &cluster_centroids,
-              vector<int> &cluster_assignments) {
+              vector<size_t> &cluster_assignments) {
 
             Cluster (data, num_clusters, cluster_centroids);
 

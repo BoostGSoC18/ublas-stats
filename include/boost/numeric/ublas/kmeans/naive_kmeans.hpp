@@ -39,10 +39,10 @@ namespace boost { namespace numeric { namespace ublas {
         }
 
         double Iterate (matrix<double> &centroids, matrix<double>& new_centroids) {
-            vector<int> data_points_per_centroid  = zero_vector<int>(centroids.size1 ());
+            vector<size_t> data_points_per_centroid  = zero_vector<size_t>(centroids.size1 ());
             new_centroids *= 0;
 
-            vector<int> cluster_assignments (data.size1 ());
+            vector<size_t> cluster_assignments (data.size1 ());
 
             // std::cout << "init centroids!" << centroids << std::endl;
             // std::cout << "new centroids!" << new_centroids << std::endl;
