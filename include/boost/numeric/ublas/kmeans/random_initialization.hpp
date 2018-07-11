@@ -28,7 +28,9 @@ namespace boost { namespace numeric { namespace ublas {
 
     class RandomInitialization {
     public:
-        RandomInitialization () {}
+        RandomInitialization () {
+            gen.seed(static_cast<unsigned int> (std::time (0)));
+        }
 
         template <class MatrixType>
         void Initialize (const MatrixType &data, const size_t num_clusters, matrix<double> &centroids) {
@@ -38,8 +40,8 @@ namespace boost { namespace numeric { namespace ublas {
             This will lead to empty clusters. Should be handled by EmptyClusterPolicy
             or here only? eg set<size_t> selected_indices;
             */
-            boost::random::mt19937 gen;
-            gen.seed(static_cast<unsigned int> (std::time (0)));;
+            
+            // std::cout << std::time (NULL) << std::endl;
             
             for (size_t i = 0; i < num_clusters; ++ i) {
                 boost::random::uniform_int_distribution<> dist (0, data.size1 () - 1);
@@ -49,6 +51,8 @@ namespace boost { namespace numeric { namespace ublas {
                 //     centroids (i, j) = data (index, j);
             }
         }
+    private:
+        boost::random::mt19937 gen;
     };
 }}}
 

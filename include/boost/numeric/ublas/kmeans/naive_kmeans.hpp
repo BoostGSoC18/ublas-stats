@@ -47,6 +47,8 @@ namespace boost { namespace numeric { namespace ublas {
             // std::cout << "init centroids!" << centroids << std::endl;
             // std::cout << "new centroids!" << new_centroids << std::endl;
 
+            double inertia = 0;
+
             for (size_t i = 0; i < data.size1 (); ++ i) {
                 matrix_row<MatrixType> data_row (data, i);
                 size_t assigned_cluster = 0;
@@ -67,6 +69,9 @@ namespace boost { namespace numeric { namespace ublas {
                         assigned_cluster = j;
                     }
                 }
+
+                inertia += min_centroid_distance;
+
                 // std::cout << "assigned cluster to " << i << ", " << data_row << ": " << assigned_cluster << std::endl;
                 cluster_assignments (i) = assigned_cluster;
                 
@@ -90,12 +95,15 @@ namespace boost { namespace numeric { namespace ublas {
             Use distance_metric.Apply () here, when implemented.
             return distance_metric.Apply (centroids, new_centroids);
             */
-            double distance_norm = 0;
-            for (size_t i = 0; i < centroids.size2 (); ++ i) {
-                distance_norm += std::pow (inner_prod (column (centroids, i) - column (new_centroids, i), column (centroids, i) - column (new_centroids, i)), 2.0);
-            }
-            return std::pow (distance_norm, 0.5);
-
+            // double distance_norm = 0;
+            // for (size_t i = 0; i < centroids.size2 (); ++ i) {
+            //     distance_norm += std::pow (inner_prod (column (centroids, i) - column (new_centroids, i), column (centroids, i) - column (new_centroids, i)), 2.0);
+            // }
+            // std::cout << cluster_assignments << std::endl;
+            // std::cout << new_centroids   << std::endl;
+            // std::cout << std::pow (distance_norm, 0.5) << std::endl;
+            // return std::pow (distance_norm, 0.5);
+            return inertia;
         }
 
     private:

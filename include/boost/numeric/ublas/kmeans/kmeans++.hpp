@@ -30,12 +30,12 @@ namespace boost { namespace numeric { namespace ublas {
 
     class KMeansPlusPlus {
     public:
-        KMeansPlusPlus () {}
+        KMeansPlusPlus () {
+            gen.seed(static_cast<unsigned int>(std::time(0)));
+        }
 
         template <class MatrixType>
         void Initialize (const MatrixType &data, const size_t num_clusters, matrix<double> &centroids) {
-            boost::random::mt19937 gen;
-            gen.seed(static_cast<unsigned int>(std::time(0)));
             boost::random::uniform_int_distribution<> uniform_dist (0, data.size1 () - 1);
             
             size_t first_centroid_index = uniform_dist (gen);
@@ -69,6 +69,8 @@ namespace boost { namespace numeric { namespace ublas {
                 }
             }            
         }
+    private:
+        boost::random::mt19937 gen;
     };
 }}}
 

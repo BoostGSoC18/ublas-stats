@@ -30,13 +30,15 @@ namespace boost { namespace numeric { namespace ublas {
         RefinedStart (size_t samplings = 100,
                       double subsample = 0.05) :
                       num_samplings(samplings),
-                      subsample_factor (subsample) {}
+                      subsample_factor (subsample) {
+
+            gen.seed(static_cast<unsigned int>(std::time(0)));
+        }
 
         template <class MatrixType>
         void Initialize (const MatrixType &data, const size_t num_clusters, matrix<double> &centroids) {
-            boost::random::mt19937 gen;
-            gen.seed(static_cast<unsigned int>(std::time(0)));
-            boost::random::uniform_int_distribution<> uniform_dist (0, data.size1 () - 1);
+
+            uniform_dist = boost::random::uniform_int_distribution<> (0, data.size1 () - 1);
 
             size_t num_sampled_points = subsample_factor * data.size1 ();
             MatrixType sampled_data (num_sampled_points, data.size2 ());
@@ -65,6 +67,9 @@ namespace boost { namespace numeric { namespace ublas {
     private:
         size_t num_samplings;
         double subsample_factor;
+
+        boost::random::mt19937 gen;
+        boost::random::uniform_int_distribution<> uniform_dist;
     };
 }}}
 
