@@ -24,20 +24,40 @@
 
 namespace boost { namespace numeric { namespace ublas {
 
+    /*
+    *   \brief Implements the KMeans class. Macro parameters like the distance metric
+    *   to be used, the initial partition method etc are provided as template parameters.
+    *
+    *   \tparam MetricType The type of distance metric to be used for evaluating
+    *   node-cluster distances. Default = EuclideanDistanceMetric
+    *
+    *   \tparam InitialPartitionPolicy The policy/method to use to initialise centroids.
+    *   Default = RandomInitialization.
+    *
+    *   \tparam EvaluateStepType The algorithm to use for a single iteration of evaluating
+    *   new centroids. Default = NaiveKMeans.
+    */
     template </*class MetricType = EuclideanDistanceMetric,*/
               class InitialPartitionPolicy = RandomInitialization,
               template<class> class EvaluateStepType = NaiveKMeans>
     class KMeans {
     public:
         KMeans (const size_t max_iterations = 100,
-                const size_t n_init = 10,
-                /*const MetricType distance_metric = MetricType (),*/
-                const InitialPartitionPolicy partition_policy = InitialPartitionPolicy ()) :
+                const size_t n_init = 10) :
                 max_iterations (max_iterations),
-                n_init (n_init),
-                /*distance_metric (distance_metric),*/
-                partition_policy (partition_policy) {}
+                n_init (n_init) {}
 
+        /*
+        *   \brief Performs clustering on data specified. Returns only the cluster
+        *   assignments.
+        *
+        *   \tparam MatrixType The type of data points (int, float, double etc)
+        *   \param data Data on which clustering is to be performed.
+        *   \param num_clusters The number of clusters to be evaluated.
+        *   \param cluster_assignments Container to store the evaluated assignments.
+        *
+        *   \return void
+        */
         template <class MatrixType>
         void Cluster (const MatrixType &data,
                       const size_t num_clusters,
@@ -47,6 +67,17 @@ namespace boost { namespace numeric { namespace ublas {
             Cluster (data, num_clusters, cluster_centroids, cluster_assignments);
         }
 
+        /*
+        *   \brief Performs clustering on data specified. Returns only the cluster
+        *   centroids.
+        *
+        *   \tparam MatrixType The type of data points (int, float, double etc)
+        *   \param data Data on which clustering is to be performed.
+        *   \param num_clusters The number of clusters to be evaluated.
+        *   \param cluster_centroids Container to store the evaluated centroids.
+        *
+        *   \return void
+        */
         template <class MatrixType>
         void Cluster (const MatrixType &data,
               const size_t num_clusters,
@@ -56,14 +87,16 @@ namespace boost { namespace numeric { namespace ublas {
 
             double min_inertia;
 
+            InitialPartitionPolicy partition_policy = InitialPartitionPolicy ();
             EvaluateStepType<const MatrixType> evaluation_step_type = EvaluateStepType<const MatrixType> (data/*, distance_metric*/);
 
+            // We will run kmeans on the data n_init times a different set of initial centroids
+            // each time. The best set of centroids/assignments will be those which have the
+            // least inertia.
             size_t num_inits = 0;
             while (num_inits++ < n_init) {
 
-                GetInitialCentroids (data, num_clusters, current_centroids);
-
-                // std::cout << "got init centroids!" << std::endl;
+                GetInitialCentroids (data, partition_policy, num_clusters, current_centroids);
 
                 if (max_iterations == 0) {
                     cluster_centroids = current_centroids;
@@ -75,19 +108,16 @@ namespace boost { namespace numeric { namespace ublas {
                 size_t num_iterations = 0;
                 bool convergence = false, iterations_finished = false;
                 matrix<double> new_cluster_centroids (current_centroids.size1 (), current_centroids.size2 ());
-                // std::cout << "evaluate step init!" << std::endl;
                 do {
                     /*
                     We don't have to repeatedly copy new_cluster_centroids to current_centroids
                     because of this alternating step.
                     */
-                    // std::cout << "iterate " << num_iterations << "!" << std::endl;
                     if (num_iterations % 2)
                         inertia = evaluation_step_type.Iterate (new_cluster_centroids, current_centroids);
                     else
                         inertia = evaluation_step_type.Iterate (current_centroids, new_cluster_centroids);
-                    // std::cout << "iterate " << num_iterations << "done!" << std::endl;
-
+                    
                     double norm = 0;
                     for (size_t i = 0; i < current_centroids.size2 (); ++ i)
                         norm += std::pow (inner_prod (column (current_centroids, i) - column (new_cluster_centroids, i), column (current_centroids, i) - column (new_cluster_centroids, i)), 2.0);
@@ -101,26 +131,26 @@ namespace boost { namespace numeric { namespace ublas {
 
                 } while (!convergence && !iterations_finished);
 
-                // std::cout << "evaluate iterations done!" << std::endl;
-
-                // std::cout << new_cluster_centroids.size1() << " " << new_cluster_centroids.size2 () << std::endl;
-                // std::cout << current_centroids.size1() << " " << current_centroids.size2 () << std::endl;
-                
                 if (num_inits == 1 || inertia < min_inertia) {
                     min_inertia = inertia;
                     cluster_centroids = new_cluster_centroids;
                 }
-
-                // for (size_t i = 0; i < cluster_centroids.size1 (); ++ i)
-                //     for (size_t j = 0; j < cluster_centroids.size2 (); ++ j)
-                //         cluster_centroids (i, j) = new_cluster_centroids (i, j);
-
-                // std::cout << "new centroids assigned!" << std::endl;
             }
-
-            // cluster_centroids /= n_init;
         }
 
+        /*
+        *   \brief Performs clustering on data specified. Returns the cluster
+        *   assignments and cluster centroids both. Calls the second Cluster method
+        *   and evaluates the assignments by finding the closest cluster centroid.
+        *
+        *   \tparam MatrixType The type of data points (int, float, double etc)
+        *   \param data Data on which clustering is to be performed.
+        *   \param num_clusters The number of clusters to be evaluated.
+        *   \param cluster_centroids Container to store the evaluated centroids.
+        *   \param cluster_assignments Container to store the evaluated assignments.
+        *
+        *   \return void
+        */
         template <class MatrixType>
         void Cluster (const MatrixType &data,
               const size_t num_clusters,
@@ -128,8 +158,6 @@ namespace boost { namespace numeric { namespace ublas {
               vector<size_t> &cluster_assignments) {
 
             Cluster (data, num_clusters, cluster_centroids);
-
-            // std::cout << "1st clusterd!" << std::endl;
 
             for (size_t i = 0; i < data.size1 (); ++ i) {
                 matrix_row<const MatrixType> data_row (data, i);
@@ -154,46 +182,28 @@ namespace boost { namespace numeric { namespace ublas {
             }
         }
 
-        // size_t MaxIterations () const {
-        //     return max_iterations;
-        // }
-
-        // size_t& MaxIterations () const {
-        //     return max_iterations;
-        // }
-
-        /*MetricType DistanceMetric () {
-            return distance_metric;
-        }
-
-        MetricType& DistanceMetric () {
-            return distance_metric;
-        }*/
-
-        // InitialPartitionPolicy PartitionPolicy () {
-        //     return partition_policy;
-        // }
-
-        // InitialPartitionPolicy& PartitionPolicy () {
-        //     return partition_policy;
-        // }
-
     private:
         /*
-        Modify this method to support partiotion policies which give
-        initial cluster assignments instead of cluster centroids.
+        *   \brief Uses the partition policy specified to generate an initial set of
+        *   centroids from the data. Modify this method to support partition policies
+        *   which give initial cluster assignments instead of cluster centroids.
+        *
+        *   \param data Data on which clustering is to be performed.
+        *   \param partition_policy The paritioning method to be used to generate
+        *   centroids.
+        *   \param num_clusters The number of centroids to be generated.
+        *   \param centroids Container to store the generated centroids.
+        *
+        *   \return void
         */
         template <class MatrixType>
-        void GetInitialCentroids (const MatrixType &data, const size_t num_clusters, matrix<double> &centroids) {
+        void GetInitialCentroids (const MatrixType &data, InitialPartitionPolicy &partition_policy, const size_t num_clusters, matrix<double> &centroids) {
             partition_policy.Initialize (data, num_clusters, centroids);
-            // std::cout << centroids << std::endl;
         }
 
     private:
         size_t max_iterations;
         size_t n_init;
-        /*MetricType distance_metric;*/
-        InitialPartitionPolicy partition_policy;
     };
 }}}
 

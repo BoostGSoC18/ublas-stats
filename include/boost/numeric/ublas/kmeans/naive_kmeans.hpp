@@ -25,45 +25,52 @@
 
 namespace boost { namespace numeric { namespace ublas {
 
-    template </* class MetricType,*/
+    /*
+    *   \brief Implements the Naive kmeans algorith step. Macro parameters like the distance metric
+    *   to be used etc are provided as template parameters.
+    *
+    *   \tparam MetricType The type of distance metric to be used for evaluating
+    *   node-cluster distances. Default = EuclideanDistanceMetric
+    *   \tparam MatrixType The type of data points (int, float, double etc).
+    */
+    template </* class MetricType = EuclideanDistanceMetric,*/
               class MatrixType = matrix<double> >
     class NaiveKMeans {
     public:
-        NaiveKMeans (MatrixType &data_set/*, MetricType distance_metric*/) : 
-                    /*distance_metric (distance_metric),*/
-                    data (data_set) {
+        NaiveKMeans (MatrixType &data_set) : 
+                    data (data_set) {}
 
-            // for (size_t i = 0; i < data_set.size1 (); ++ i)
-            //     for (size_t j = 0; j < data_set.size2 (); ++ i)
-            //         data (i, j) = data_set (i, j);
-        }
-
+        /*
+        *   \brief Performs a single iteration of naive kmeans algorithm. New centroids are evaluated
+        *   from the cluster assignment of data points according to the old centroids. A new
+        *   centroid is simply the mean of all data points belonging to the old centroid.
+        *
+        *   \param centroids Old cluster centroids.
+        *   \param new_centroids Container to store and return the new set of cluster centroids.
+        *
+        *   \return The inertia of the current set of centroids, i.e the sum of squared distance of
+        *   each node from its closest centroid.
+        */
         double Iterate (matrix<double> &centroids, matrix<double>& new_centroids) {
             vector<size_t> data_points_per_centroid  = zero_vector<size_t>(centroids.size1 ());
             new_centroids *= 0;
 
             vector<size_t> cluster_assignments (data.size1 ());
 
-            // std::cout << "init centroids!" << centroids << std::endl;
-            // std::cout << "new centroids!" << new_centroids << std::endl;
-
             double inertia = 0;
 
+            // First we find the closest centroid for each data point and set the cluster
+            // assignment accordingly.
             for (size_t i = 0; i < data.size1 (); ++ i) {
                 matrix_row<MatrixType> data_row (data, i);
                 size_t assigned_cluster = 0;
-                /*
-                Use distance_metric.Apply () here, when implemented.
-                double min_centroid_distance = distance_metric.Apply (data_row, row (centroids, 0));
-                */
+                
                 double min_centroid_distance = inner_prod (data_row - row (centroids, 0), data_row - row (centroids, 0));
+                
                 for (size_t j = 0; j < centroids.size1 (); ++ j) {
-                    /*
-                    Use distance_metric.Apply () here, when implemented.
-                    double min_centroid_distance = distance_metric.Apply (data_row, row (centroids, 0));
-                    */
+                    
                     double distance = inner_prod (data_row - row (centroids, j), data_row - row (centroids, j));
-                    // std::cout << "distance from " << row (centroids, j) << " " << j << ": " << distance << std::endl;
+                    
                     if (distance < min_centroid_distance) {
                         min_centroid_distance = distance;
                         assigned_cluster = j;
@@ -72,43 +79,24 @@ namespace boost { namespace numeric { namespace ublas {
 
                 inertia += min_centroid_distance;
 
-                // std::cout << "assigned cluster to " << i << ", " << data_row << ": " << assigned_cluster << std::endl;
                 cluster_assignments (i) = assigned_cluster;
                 
                 row (new_centroids, assigned_cluster) += data_row;
-                // for (size_t i = 0; i < new_centroids.size2 (); ++i)
-                //     new_centroids (assigned_cluster, i) += data_row (i);
-
                 
                 data_points_per_centroid (assigned_cluster) += 1;
             }
 
-            // std::cout << "data points per centroid: " << data_points_per_centroid << std::endl;
-
+            // Then, the new centroids are evaluated by taking the mean of data points
+            // belonging to each centroid.
             for (size_t i = 0; i < new_centroids.size1 (); ++ i)
                 if (data_points_per_centroid (i))
                     row (new_centroids, i) /= data_points_per_centroid (i);
-                    // for (size_t j = 0; j < new_centroids.size2 (); ++j)
-                    //     new_centroids (i, j) /= data_points_per_centroid (i);
-
-            /*
-            Use distance_metric.Apply () here, when implemented.
-            return distance_metric.Apply (centroids, new_centroids);
-            */
-            // double distance_norm = 0;
-            // for (size_t i = 0; i < centroids.size2 (); ++ i) {
-            //     distance_norm += std::pow (inner_prod (column (centroids, i) - column (new_centroids, i), column (centroids, i) - column (new_centroids, i)), 2.0);
-            // }
-            // std::cout << cluster_assignments << std::endl;
-            // std::cout << new_centroids   << std::endl;
-            // std::cout << std::pow (distance_norm, 0.5) << std::endl;
-            // return std::pow (distance_norm, 0.5);
+            
             return inertia;
         }
 
     private:
         MatrixType data;
-        /*MetricType distance_metric;*/
     };
 }}}
 

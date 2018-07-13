@@ -26,12 +26,26 @@
 
 namespace boost { namespace numeric { namespace ublas {
 
+    /*
+    *   \brief RandomInitialization simply selects num_clusters data points at random as the initial
+    *   set of centroids.
+    */
     class RandomInitialization {
     public:
         RandomInitialization () {
             gen.seed(static_cast<unsigned int> (std::time (0)));
         }
 
+        /*
+        *   \brief Initializes a set of centroids from the data through uniform random selection.
+        *
+        *   \tparam MatrixType The type of data points (int, float, double etc)
+        *   \param data Data on which clustering is to be performed.
+        *   \param num_clusters The number of clusters to be evaluated.
+        *   \param cluster_centroids Container to store the generated centroids.
+        *
+        *   \return void
+        */
         template <class MatrixType>
         void Initialize (const MatrixType &data, const size_t num_clusters, matrix<double> &centroids) {
             /*
@@ -40,15 +54,10 @@ namespace boost { namespace numeric { namespace ublas {
             This will lead to empty clusters. Should be handled by EmptyClusterPolicy
             or here only? eg set<size_t> selected_indices;
             */
-            
-            // std::cout << std::time (NULL) << std::endl;
-            
             for (size_t i = 0; i < num_clusters; ++ i) {
                 boost::random::uniform_int_distribution<> dist (0, data.size1 () - 1);
                 size_t index = dist (gen);
                 row (centroids, i) = row (data, index);
-                // for (size_t j = 0; j < centroids.size2 (); ++j)
-                //     centroids (i, j) = data (index, j);
             }
         }
     private:

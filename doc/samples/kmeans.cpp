@@ -28,20 +28,20 @@ int main() {
 
     // KMeans<RandomInitialization, NaiveKMeans> kmeans(100);
     // KMeans<KMeansPlusPlus, NaiveKMeans> kmeans(100);
-    KMeans<RefinedStart, NaiveKMeans> kmeans(100);
+    KMeans<RefinedStart> kmeans(1000);
     // std::cout << "init!" << std::endl;
     int n = 3;
-    vector<int> assignments (data2.size1 ());
+    vector<size_t> assignments (data2.size1 ());
     matrix<double> centroids (n, data2.size2());
     // std::cout << "init vars!" << std::endl;
     kmeans.Cluster (data2, n, centroids, assignments);
     // std::cout << "clusterd!" << std::endl;
-    for (int i = 0; i < data2.size1 (); i++) {
+    // for (int i = 0; i < data2.size1 (); i++) {
         // std::cout << row (data2, i) << " " << assignments (i) << " " << gt (i) << std::endl;
-        for (int j = 0; j < data2.size2 (); j++)
-            std::cout << data2 (i,j) << " ";
+        // for (int j = 0; j < data2.size2 (); j++)
+            // std::cout << data2 (i,j) << " ";
         // std::cout << assignments (i) << std::endl;
-        std::cout << gt (i) << std::endl;
-    }
+        // std::cout << gt (i) << std::endl;
+    // }
     return 0;
 }
