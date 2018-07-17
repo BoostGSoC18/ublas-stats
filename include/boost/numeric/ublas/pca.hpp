@@ -13,6 +13,8 @@
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 
+#include <boost/numeric/ublas/eigen_solver.hpp>
+
 namespace boost { namespace numeric { namespace ublas {
 
     class PCA {
@@ -72,8 +74,8 @@ namespace boost { namespace numeric { namespace ublas {
         template <class MatrixType>
         void Apply (const MatrixType &data,
                     matrix<double> &transformed_data,
-                    vector<double> eigen_values,
-                    matrix<double> eigen_vectors) {
+                    vector<double> &eigen_values,
+                    matrix<double> &eigen_vectors) {
 
             matrix<double> centered_data (data.size1 (), data.size2 ());
             CenterData (data, centered_data);
@@ -82,6 +84,11 @@ namespace boost { namespace numeric { namespace ublas {
             MatrixType empirical_covariance_matrix = (1 / (n - 1)) * (trans (data) * data);
 
             // Code to get eigen values and eigen vectors.
+            eigen_solver< matrix<double> > evd_solver (empirical_covariance_matrix, EIGVEC);
+            matrix<double> eigval_matrix = evd_solver.get_real_eigenvalues ();
+            for (size_t i = 0; i < eigval_matrix.size1 (); ++ i)
+                eigen_values (i) = eigval_matrix (i, i);
+            eigen_vectors = evd_solver.get_real_eigenvectors ();
 
             transformed_data = centered_data * eigen_vectors;
         }
