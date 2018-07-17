@@ -1,7 +1,17 @@
+// Dattatreya Mohapatra
+// 
+//  Distributed under the Boost Software License, Version 1.0. (See
+//  accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+/// \file pca.hpp Contains the class and methods for performing PCA on matrices.
+
+#ifndef _BOOST_UBLAS_PCA_
+#define _BOOST_UBLAS_PCA_
+
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 #include <boost/numeric/ublas/vector.hpp>
-#include <boost/numeric/ublas/vector_proxy.hpp>
 
 namespace boost { namespace numeric { namespace ublas {
 
