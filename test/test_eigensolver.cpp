@@ -59,7 +59,7 @@ int main() {
 			is >> A;
 		}
 		
-	  	{
+	    {
 			std::istringstream is(matrix_EVALR[i]);
 			is >> GT_EVALR;
 		}

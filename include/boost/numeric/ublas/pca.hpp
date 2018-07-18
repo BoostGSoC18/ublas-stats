@@ -81,7 +81,7 @@ namespace boost { namespace numeric { namespace ublas {
             CenterData (data, centered_data);
 
             size_t n = data.size1 ();
-            MatrixType empirical_covariance_matrix = (1 / (n - 1)) * (trans (data) * data);
+            MatrixType empirical_covariance_matrix = prod (trans (centered_data), centered_data) / (n - 1);
 
             // Code to get eigen values and eigen vectors.
             eigen_solver< matrix<double> > evd_solver (empirical_covariance_matrix, EIGVEC);
@@ -90,16 +90,19 @@ namespace boost { namespace numeric { namespace ublas {
                 eigen_values (i) = eigval_matrix (i, i);
             eigen_vectors = evd_solver.get_real_eigenvectors ();
 
-            transformed_data = centered_data * eigen_vectors;
+            transformed_data = prod (centered_data, eigen_vectors);
         }
 
     private:
 
         template <class MatrixType>
         void CenterData (const MatrixType &data, matrix<double> &centered_data) {
-            centered_data = trans (scalar_vector<int> (1)) * mean (data, 0);
+            for (size_t i = 0; i < data.size2 (); ++ i)
+                column (centered_data, i) = column (data, i) - scalar_vector<double> (data.size1 (), mean (column (data, i)));
         }
 
     };
 
 }}}
+
+#endif
