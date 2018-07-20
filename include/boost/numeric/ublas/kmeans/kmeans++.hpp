@@ -92,7 +92,7 @@ namespace boost { namespace numeric { namespace ublas {
                     if (new_centroid_distance < closest_centroid_distance (data_counter))
                         closest_centroid_distance (data_counter) = new_centroid_distance;
                 }
-            }            
+            }
         }
     private:
         boost::random::mt19937 gen;

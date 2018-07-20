@@ -117,7 +117,7 @@ namespace boost { namespace numeric { namespace ublas {
                         inertia = evaluation_step_type.Iterate (new_cluster_centroids, current_centroids);
                     else
                         inertia = evaluation_step_type.Iterate (current_centroids, new_cluster_centroids);
-                    
+
                     double norm = 0;
                     for (size_t i = 0; i < current_centroids.size2 (); ++ i)
                         norm += std::pow (inner_prod (column (current_centroids, i) - column (new_cluster_centroids, i), column (current_centroids, i) - column (new_cluster_centroids, i)), 2.0);

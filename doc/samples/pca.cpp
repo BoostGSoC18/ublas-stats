@@ -23,11 +23,11 @@ int main(int argc, char const *argv[]) {
     matrix<double> new_data (3,2);
     vector<double> eigvals (2);
     matrix<double> eigvecs (2,2);
-    // pca.Apply (data, new_data, eigvals, eigvecs);
-    pca.Apply (data, new_data, 1);
+    pca.Apply (data, new_data, eigvals, eigvecs);
+    // pca.Apply (data, new_data, 1);
 
-    // std::cout << "eigvals " << eigvals << std::endl;
-    // std::cout << "eigvecs " << eigvecs << std::endl;
+    std::cout << "eigvals " << pca.GetEigenValues () << std::endl;
+    std::cout << "eigvecs " << pca.GetEigenVectors () << std::endl;
     std::cout << "transformed data " << new_data << std::endl;
 
     return 0;

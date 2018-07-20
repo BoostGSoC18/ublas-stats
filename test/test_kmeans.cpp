@@ -63,7 +63,7 @@ BOOST_UBLAS_TEST_DEF (test_kmeans_basic) {
     std::istringstream is (KMEANS_INPUT_DATA);
     is >> data;
 
-    KMeans<KMeansPlusPlus> kmeans (1000);
+    KMeans<> kmeans (1000);
 
     vector<size_t> assignments (data.size1 ());
 
@@ -104,23 +104,19 @@ BOOST_UBLAS_TEST_DEF (test_refined_start) {
 
     // First Gaussian: 10000 points, centered at (0, 0, 0).
     // Second Gaussian: 2000 points, centered at (5, 0, -2).
-    // Third Gaussian: 5000 points, centered at (-2, -2, -2).
-    // Fourth Gaussian: 1000 points, centered at (-6, 8, 8).
-    // Fifth Gaussian: 12000 points, centered at (1, 6, 1).
-    for (size_t i = 1000; i < 1200; ++i) {
-    // std::cout << row (data, i) << std::endl;
-    // std::cout << row (centroids, 1) << std::endl;
+    for (size_t i = 1000; i < 1200; ++i)
         row (data, i) += row (centroids, 1);
-    }
+    // Third Gaussian: 5000 points, centered at (-2, -2, -2).
     for (size_t i = 1200; i < 1700; ++i)
         row (data, i) += row (centroids, 2);
+    // Fourth Gaussian: 1000 points, centered at (-6, 8, 8).
     for (size_t i = 1700; i < 1800; ++i)
         row (data, i) += row (centroids, 3);
+    // Fifth Gaussian: 12000 points, centered at (1, 6, 1).
     for (size_t i = 1800; i < 3000; ++i)
         row (data, i) += row (centroids, 4);
 
     size_t num_clusters = 5;
-
 
     KMeans<RefinedStart> kmeans (0, 1);
     vector<size_t> assignments (data.size1 ());
@@ -170,10 +166,10 @@ int main() {
     BOOST_UBLAS_TEST_SUITE("KMeans Test Suite");
 
     BOOST_UBLAS_TEST_BEGIN();
-        // BOOST_UBLAS_TEST_DO( test_random_initialization );
+        BOOST_UBLAS_TEST_DO( test_random_initialization );
         BOOST_UBLAS_TEST_DO( test_kmeans_basic );
-        // BOOST_UBLAS_TEST_DO( test_refined_start );
-        // BOOST_UBLAS_TEST_DO( test_kmeans_plusplus );
+        BOOST_UBLAS_TEST_DO( test_refined_start );
+        BOOST_UBLAS_TEST_DO( test_kmeans_plusplus );
     BOOST_UBLAS_TEST_END();
 
     return 0;

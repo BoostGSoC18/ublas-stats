@@ -51,7 +51,7 @@ namespace boost { namespace numeric { namespace ublas {
         *   \return The inertia of the current set of centroids, i.e the sum of squared distance of
         *   each node from its closest centroid.
         */
-        double Iterate (matrix<double> &centroids, matrix<double>& new_centroids) {
+        double Iterate (const matrix<double> &centroids, matrix<double> &new_centroids) {
             vector<size_t> data_points_per_centroid  = zero_vector<size_t>(centroids.size1 ());
             new_centroids *= 0;
 
