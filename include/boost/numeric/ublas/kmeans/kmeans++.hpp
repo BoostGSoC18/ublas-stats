@@ -43,13 +43,10 @@ namespace boost { namespace numeric { namespace ublas {
         *   \brief Initializes a set of centroids from the data by first generating selecting a
         *   random data point as a centroid, and then selecting the one furthest from the current
         *   set of centroids as the next centroid.
-        *
         *   \tparam MatrixType The type of data points (int, float, double etc)
         *   \param data Data on which clustering is to be performed.
         *   \param num_clusters The number of clusters to be evaluated.
         *   \param cluster_centroids Container to store the generated centroids.
-        *
-        *   \return void
         */
         template <class MatrixType>
         void Initialize (const MatrixType &data, const size_t num_clusters, matrix<double> &centroids) {

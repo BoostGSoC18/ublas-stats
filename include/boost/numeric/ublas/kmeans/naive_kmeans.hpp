@@ -28,10 +28,10 @@ namespace boost { namespace numeric { namespace ublas {
     /*
     *   \brief Implements the Naive kmeans algorith step. Macro parameters like the distance metric
     *   to be used etc are provided as template parameters.
-    *
     *   \tparam MetricType The type of distance metric to be used for evaluating
     *   node-cluster distances. Default = EuclideanDistanceMetric
     *   \tparam MatrixType The type of data points (int, float, double etc).
+    *   \param data_set Data to be clustered.
     */
     template </* class MetricType = EuclideanDistanceMetric,*/
               class MatrixType = matrix<double> >
@@ -44,10 +44,8 @@ namespace boost { namespace numeric { namespace ublas {
         *   \brief Performs a single iteration of naive kmeans algorithm. New centroids are evaluated
         *   from the cluster assignment of data points according to the old centroids. A new
         *   centroid is simply the mean of all data points belonging to the old centroid.
-        *
         *   \param centroids Old cluster centroids.
         *   \param new_centroids Container to store and return the new set of cluster centroids.
-        *
         *   \return The inertia of the current set of centroids, i.e the sum of squared distance of
         *   each node from its closest centroid.
         */

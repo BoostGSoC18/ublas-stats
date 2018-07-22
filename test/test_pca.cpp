@@ -95,7 +95,7 @@ int main() {
 
     BOOST_UBLAS_TEST_BEGIN();
         BOOST_UBLAS_TEST_DO( test_pca_num_factors );
-        // BOOST_UBLAS_TEST_DO( test_pca_variance_retained );
+        BOOST_UBLAS_TEST_DO( test_pca_variance_retained );
     BOOST_UBLAS_TEST_END();
 
     return 0;

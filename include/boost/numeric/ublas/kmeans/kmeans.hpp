@@ -27,15 +27,16 @@ namespace boost { namespace numeric { namespace ublas {
     /*
     *   \brief Implements the KMeans class. Macro parameters like the distance metric
     *   to be used, the initial partition method etc are provided as template parameters.
-    *
     *   \tparam MetricType The type of distance metric to be used for evaluating
     *   node-cluster distances. Default = EuclideanDistanceMetric
-    *
     *   \tparam InitialPartitionPolicy The policy/method to use to initialise centroids.
     *   Default = RandomInitialization.
-    *
     *   \tparam EvaluateStepType The algorithm to use for a single iteration of evaluating
     *   new centroids. Default = NaiveKMeans.
+    *   \param max_iterations Maximum number of KMeans algorithm (EvaluateStepType) steps
+    *   to be performed.
+    *   \param n_init The number of trials to be performed before selecting the best set of
+    *   clusters.
     */
     template </*class MetricType = EuclideanDistanceMetric,*/
               class InitialPartitionPolicy = RandomInitialization,
@@ -55,8 +56,6 @@ namespace boost { namespace numeric { namespace ublas {
         *   \param data Data on which clustering is to be performed.
         *   \param num_clusters The number of clusters to be evaluated.
         *   \param cluster_assignments Container to store the evaluated assignments.
-        *
-        *   \return void
         */
         template <class MatrixType>
         void Cluster (const MatrixType &data,
@@ -70,13 +69,10 @@ namespace boost { namespace numeric { namespace ublas {
         /*
         *   \brief Performs clustering on data specified. Returns only the cluster
         *   centroids.
-        *
         *   \tparam MatrixType The type of data points (int, float, double etc)
         *   \param data Data on which clustering is to be performed.
         *   \param num_clusters The number of clusters to be evaluated.
         *   \param cluster_centroids Container to store the evaluated centroids.
-        *
-        *   \return void
         */
         template <class MatrixType>
         void Cluster (const MatrixType &data,
@@ -142,14 +138,11 @@ namespace boost { namespace numeric { namespace ublas {
         *   \brief Performs clustering on data specified. Returns the cluster
         *   assignments and cluster centroids both. Calls the second Cluster method
         *   and evaluates the assignments by finding the closest cluster centroid.
-        *
         *   \tparam MatrixType The type of data points (int, float, double etc)
         *   \param data Data on which clustering is to be performed.
         *   \param num_clusters The number of clusters to be evaluated.
         *   \param cluster_centroids Container to store the evaluated centroids.
         *   \param cluster_assignments Container to store the evaluated assignments.
-        *
-        *   \return void
         */
         template <class MatrixType>
         void Cluster (const MatrixType &data,
@@ -187,14 +180,11 @@ namespace boost { namespace numeric { namespace ublas {
         *   \brief Uses the partition policy specified to generate an initial set of
         *   centroids from the data. Modify this method to support partition policies
         *   which give initial cluster assignments instead of cluster centroids.
-        *
         *   \param data Data on which clustering is to be performed.
         *   \param partition_policy The paritioning method to be used to generate
         *   centroids.
         *   \param num_clusters The number of centroids to be generated.
         *   \param centroids Container to store the generated centroids.
-        *
-        *   \return void
         */
         template <class MatrixType>
         void GetInitialCentroids (const MatrixType &data, InitialPartitionPolicy &partition_policy, const size_t num_clusters, matrix<double> &centroids) {
