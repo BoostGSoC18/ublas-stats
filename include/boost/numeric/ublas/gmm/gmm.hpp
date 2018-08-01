@@ -77,7 +77,7 @@ namespace boost { namespace numeric { namespace ublas {
         }
 
         template <class VectorType,
-                  class FittingPolicy>
+                  class FittingPolicy = EMFit<VectorType> >
         void Train (const VectorType &data,
                     const size_t max_iterations = 1000,
                     const size_t n_trials = 10,
@@ -91,6 +91,8 @@ namespace boost { namespace numeric { namespace ublas {
             bool convergence = false, iterations_finished = false;
 
             double current_loglikelihood = LogLikelihood (data, weights, distributions);
+
+            InitializeComponents (data);
 
             do {
                 fitter.Step (distributions, weights);
@@ -108,6 +110,18 @@ namespace boost { namespace numeric { namespace ublas {
         }
 
     private:
+
+        template <class VectorType>
+        void InitializeComponents (const VectorType &data) {
+            double stdev = std::sqrt (variance (data));
+            boost::random::uniform_int_distribution<> uniform_dist (0, data.size () - 1);
+            for (size_t i = 0; i < distributions.size (); ++ i) {
+                double mean = data (uniform_dist (random_generator));
+                distributions[i] = boost::math::normal (mean, stdev);
+                weights (i) = 1.0 / n_components;
+            }
+        }
+
         template <class VectorType>
         double LogLikelihood (const VectorType &data,
                               const vector<double> &weights,

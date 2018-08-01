@@ -31,10 +31,28 @@ namespace boost { namespace numeric { namespace ublas {
         void Step (std::vector<boost::math::normal> &distributions,
                    vector<double> &weights) {
 
+            matrix<double> component_probabilities (data.size (), distributions.size ());
+
+            for (size_t i = 0; i < data.size (); ++ i) {
+                for (size_t k = 0; k < distributions.size (); ++ k)
+                    component_probabilities (i, k) = pdf (distributions[k], data (i));
+                row (component_probabilities, i) /= sum (row (component_probabilities, i));
+            }
+
+            weights = sum (component_probabilities, 0) / data.size ();
+            vector<double> new_means = prod (data, component_probabilities);
+            for (size_t k = 0; k < distributions.size (); ++ k) {
+                new_means (k) /= sum (column (component_probabilities, k));
+                double new_variance = 0;;
+                for (size_t i = 0; i < data.size (); ++ i)
+                    new_variance += component_probabilities (i, k) * std::pow (data (i) - new_means (k), 2);
+                new_variance /= sum (column (component_probabilities, k));
+                distributions[k] = boost::math::normal (new_means (k), std::sqrt (new_variance));
+            }
         }
 
     private:
-        VectorType data;
+        const VectorType data;
     };
 
 }}}
