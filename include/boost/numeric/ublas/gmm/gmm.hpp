@@ -37,8 +37,24 @@ namespace boost { namespace numeric { namespace ublas {
         GMM (const size_t n_components) :
             n_components (n_components),
             distributions (n_components, boost::math::normal ()) {
+
+            random_generator.seed (static_cast<unsigned int> (std::time (0)));
+
             weights = scalar_vector<double> (n_components, 1.0 / n_components);
-            random_generator.seed(static_cast<unsigned int> (std::time (0)));
+        }
+
+        GMM (const size_t n_components,
+             vector<double> &weights,
+             vector<double> &means,
+             vector<double> &stdevs) :
+            n_components (n_components),
+            weights (weights) {
+
+
+            random_generator.seed (static_cast<unsigned int> (std::time (0)));
+
+            for (size_t i = 0; i < n_components; ++ i)
+                distributions.push_back (boost::math::normal (means (i), stdevs (i)));
         }
 
         double Sample () {
@@ -59,7 +75,7 @@ namespace boost { namespace numeric { namespace ublas {
 
         template <class ValueType>
         double GetProbability (const ValueType x, size_t component_label) {
-            return pdf (distributions[component_label - 1], x);
+            return pdf (distributions[component_label], x);
         }
 
         template <class ValueType>
@@ -73,7 +89,7 @@ namespace boost { namespace numeric { namespace ublas {
                     closest_component = i;
                 }
             }
-            return (closest_component + 1);
+            return closest_component;
         }
 
         template <class VectorType,
@@ -85,28 +101,48 @@ namespace boost { namespace numeric { namespace ublas {
 
             size_t i_trials = 0;
             
-            FittingPolicy fitter = FittingPolicy (data);
-
-            size_t num_iterations = 0;
-            bool convergence = false, iterations_finished = false;
-
-            double current_loglikelihood = LogLikelihood (data, weights, distributions);
-
-            InitializeComponents (data);
-
             do {
-                fitter.Step (distributions, weights);
-                
-                double new_loglikelihood = LogLikelihood (data, weights, distributions);
 
-                ++ num_iterations;
-                
-                if (num_iterations == max_iterations)
-                    iterations_finished = true;
-                if (std::abs (new_loglikelihood - current_loglikelihood) < TOL)
-                    convergence = true;
+                FittingPolicy fitter = FittingPolicy (data);
 
-            } while (!convergence && !iterations_finished);
+                size_t num_iterations = 0;
+                bool convergence = false, iterations_finished = false;
+
+                double current_loglikelihood = LogLikelihood (data, weights, distributions);
+
+                InitializeComponents (data);
+
+                do {
+                    fitter.Step (distributions, weights);
+                    
+                    double new_loglikelihood = LogLikelihood (data, weights, distributions);
+
+                    ++ num_iterations;
+                    
+                    if (num_iterations == max_iterations)
+                        iterations_finished = true;
+                    if (std::abs (new_loglikelihood - current_loglikelihood) < TOL)
+                        convergence = true;
+
+                } while (!convergence && !iterations_finished);
+
+                // std::cout << distributions[0].mean () << " " << distributions[0].standard_deviation () << std::endl;
+
+                ++ i_trials;
+
+            } while (i_trials < 10);
+        }
+
+        double GetComponentMean (size_t component_label) {
+            return distributions[component_label].mean ();
+        }
+
+        double GetComponentStandardDeviation (size_t component_label) {
+            return distributions[component_label].standard_deviation ();
+        }
+
+        double GetComponentWeight (size_t component_label) {
+            return weights[component_label];
         }
 
     private:
@@ -116,7 +152,8 @@ namespace boost { namespace numeric { namespace ublas {
             double stdev = std::sqrt (variance (data));
             boost::random::uniform_int_distribution<> uniform_dist (0, data.size () - 1);
             for (size_t i = 0; i < distributions.size (); ++ i) {
-                double mean = data (uniform_dist (random_generator));
+                size_t index = uniform_dist (random_generator);
+                double mean = data (index);
                 distributions[i] = boost::math::normal (mean, stdev);
                 weights (i) = 1.0 / n_components;
             }
