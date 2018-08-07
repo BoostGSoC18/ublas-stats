@@ -35,11 +35,14 @@ namespace boost { namespace numeric { namespace ublas {
 
             for (size_t i = 0; i < data.size (); ++ i) {
                 for (size_t k = 0; k < distributions.size (); ++ k)
-                    component_probabilities (i, k) = pdf (distributions[k], data (i));
-                row (component_probabilities, i) /= sum (row (component_probabilities, i));
+                    component_probabilities (i, k) = weights (k) * pdf (distributions[k], data (i));
+                if (sum (row (component_probabilities, i)) != 0)
+                    row (component_probabilities, i) /= sum (row (component_probabilities, i));
             }
 
+
             weights = sum (component_probabilities, 0) / data.size ();
+
             vector<double> new_means = prod (data, component_probabilities);
             for (size_t k = 0; k < distributions.size (); ++ k) {
                 new_means (k) /= sum (column (component_probabilities, k));

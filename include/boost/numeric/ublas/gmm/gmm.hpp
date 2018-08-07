@@ -116,7 +116,7 @@ namespace boost { namespace numeric { namespace ublas {
                     fitter.Step (distributions, weights);
                     
                     double new_loglikelihood = LogLikelihood (data, weights, distributions);
-
+                
                     ++ num_iterations;
                     
                     if (num_iterations == max_iterations)
@@ -124,9 +124,9 @@ namespace boost { namespace numeric { namespace ublas {
                     if (std::abs (new_loglikelihood - current_loglikelihood) < TOL)
                         convergence = true;
 
-                } while (!convergence && !iterations_finished);
+                    current_loglikelihood = new_loglikelihood;
 
-                // std::cout << distributions[0].mean () << " " << distributions[0].standard_deviation () << std::endl;
+                } while (!convergence && !iterations_finished);
 
                 ++ i_trials;
 
