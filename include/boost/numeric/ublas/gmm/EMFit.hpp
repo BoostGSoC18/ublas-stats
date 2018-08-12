@@ -23,11 +23,25 @@
 
 namespace boost { namespace numeric { namespace ublas {
 
+    /*
+    *   \brief Implements the expectation-maximizzation algorithm step for GMMs.
+    *   \tparam VectorType The type of data points (int, float, double etc).
+    *   \param data_set Data to be clustered.
+    */
     template<class VectorType>
     class EMFit {
     public:
         EMFit (const VectorType &data) : data (data) {}
 
+        /*
+        *   \brief Performs a single iteration of expectation-maximization algorithm for GMMs.
+        *   New weights, means and standard deviations are evaluated using the member probabilities
+        *   of each data point with each component distribution.
+        *   \param distributions Container holding the old component gaussian distributions. New
+        *   distributions are returned by modifying this container only.
+        *   \param weights Container holding the weight of each component gaussian distribution. New
+        *   weights are returned by modifying this container only.
+        */
         void Step (std::vector<boost::math::normal> &distributions,
                    vector<double> &weights) {
 
@@ -39,7 +53,6 @@ namespace boost { namespace numeric { namespace ublas {
                 if (sum (row (component_probabilities, i)) != 0)
                     row (component_probabilities, i) /= sum (row (component_probabilities, i));
             }
-
 
             weights = sum (component_probabilities, 0) / data.size ();
 
