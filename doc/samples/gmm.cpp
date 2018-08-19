@@ -1,4 +1,5 @@
 #include <boost/numeric/ublas/gmm/gmm.hpp>
+#include <boost/numeric/ublas/gmm/gmm_kmeans_initialization.hpp>
 
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/vector.hpp>
@@ -10,7 +11,7 @@ using namespace boost::numeric::ublas;
 
 int main(int argc, char const *argv[]) {
     
-    GMM s (4);
+    GMM<GMM_KMeansInitialization> s (4);
     std::cout << s.Sample () << std::endl;
 
     /*

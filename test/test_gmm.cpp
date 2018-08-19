@@ -41,7 +41,7 @@ BOOST_UBLAS_TEST_DEF (test_probability) {
     std::istringstream is3 (STDEVS_INPUT);
     is3 >> stdevs;
 
-    GMM gmm (2, weights, means, stdevs);
+    GMM<> gmm (2, weights, means, stdevs);
 
     BOOST_UBLAS_TEST_CHECK_CLOSE (gmm.GetProbability (0), 0.165013842603, TOL);
     BOOST_UBLAS_TEST_CHECK_CLOSE (gmm.GetProbability (1), 0.157280970937, TOL);
@@ -70,7 +70,7 @@ BOOST_UBLAS_TEST_DEF (test_probability_component) {
     std::istringstream is3 (STDEVS_INPUT);
     is3 >> stdevs;
 
-    GMM gmm (2, weights, means, stdevs);
+    GMM<> gmm (2, weights, means, stdevs);
 
     BOOST_UBLAS_TEST_CHECK_CLOSE (gmm.GetProbability (0, 0), 0.398942280401, TOL);
     BOOST_UBLAS_TEST_CHECK_CLOSE (gmm.GetProbability (0, 1), 0.0647587978329, TOL);
@@ -99,7 +99,7 @@ BOOST_UBLAS_TEST_DEF (test_train_single_gaussian) {
 
     boost::random::uniform_01<double> uniform_distribution;
 
-    GMM gmm (1);
+    GMM<> gmm (1);
 
     for (size_t iterations = 0; iterations < 4; ++ iterations) {
         double mean = uniform_distribution (gen);
@@ -128,7 +128,7 @@ BOOST_UBLAS_TEST_DEF (test_train_multiple_gaussians) {
 
     boost::random::uniform_01<double> uniform_distribution;
 
-    GMM gmm (2);
+    GMM<> gmm (2);
 
     for (size_t iterations = 0; iterations < 4; ++ iterations) {
         double mean1 = 1;
@@ -165,7 +165,7 @@ BOOST_UBLAS_TEST_DEF (test_sample_generator) {
     vector<double> stdevs (2);
     stdevs (0) = 2; stdevs (1) = 1;
 
-    GMM gmm (2, weights, means, stdevs);
+    GMM<> gmm (2, weights, means, stdevs);
 
     vector<double> generated_data (1000);
     for (size_t i = 0; i < 1000; ++ i)

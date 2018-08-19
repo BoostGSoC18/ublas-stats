@@ -19,7 +19,9 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
-#include "EMFit.hpp"
+#include <boost/numeric/ublas/gmm/EMFit.hpp>
+#include <boost/numeric/ublas/gmm/gmm_random_initialization.hpp>
+#include <boost/numeric/ublas/gmm/gmm_kmeans_initialization.hpp>
 
 #include <boost/math/distributions/normal.hpp>
 
@@ -38,6 +40,7 @@ namespace boost { namespace numeric { namespace ublas {
     *   The gaussian components are initialized with zero mean and unit standard
     *   deviation. Each component has an equal weight.
     */
+    template <class InitialPartitionPolicy = GMM_RandomInitialization>
     class GMM {
     public:
         GMM (const size_t n_components) :
@@ -144,7 +147,7 @@ namespace boost { namespace numeric { namespace ublas {
                   class FittingPolicy = EMFit<VectorType> >
         void Train (const VectorType &data,
                     const size_t max_iterations = 1000,
-                    const double TOL = 1e-9) {
+                    const double TOL = 1e-6) {
 
             FittingPolicy fitter = FittingPolicy (data);
 
@@ -203,18 +206,17 @@ namespace boost { namespace numeric { namespace ublas {
     private:
 
         /*
-        *   \brief Randomly assign a set of data points as initial means of the component
-        *   distributions. Modify this method to support other partition policies like KMeans in future.
+        *   \brief Assigns a set of data points as initial means of the component
+        *   distributions, according to the specified initial partition policy.
+        *   \param partition_policy The paritioning method to be used to generate
+        *   means for the initial set of Gaussian components.
         *   \param data Data on which GMM is to be trained.
         */
         template <class VectorType>
         void InitializeComponents (const VectorType &data) {
-            double stdev = std::sqrt (variance (data));
-            boost::random::uniform_int_distribution<> uniform_dist (0, data.size () - 1);
+            InitialPartitionPolicy partition_policy = InitialPartitionPolicy ();
+            partition_policy.Initialize (data, n_components, distributions);
             for (size_t i = 0; i < distributions.size (); ++ i) {
-                size_t index = uniform_dist (random_generator);
-                double mean = data (index);
-                distributions[i] = boost::math::normal (mean, stdev);
                 weights (i) = 1.0 / n_components;
             }
         }

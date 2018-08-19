@@ -63,7 +63,8 @@ namespace boost { namespace numeric { namespace ublas {
                 for (size_t i = 0; i < data.size (); ++ i)
                     new_variance += component_probabilities (i, k) * std::pow (data (i) - new_means (k), 2);
                 new_variance /= sum (column (component_probabilities, k));
-                distributions[k] = boost::math::normal (new_means (k), std::sqrt (new_variance));
+                if (new_variance != 0)
+                    distributions[k] = boost::math::normal (new_means (k), std::sqrt (new_variance));
             }
         }
 
